@@ -1,0 +1,34 @@
+/* The curtain's own parts, scoped so several pieces can share one page (the room).
+   mount() adds .piece-curtain to the 2048 × 2048 stage it draws into. */
+
+/* The frame sits on top so the top character of each strand tucks behind the rod */
+.piece-curtain .frame {
+  position: absolute;
+  inset: 0;
+  width: 2048px;
+  height: 2048px;
+  pointer-events: none;
+}
+
+.piece-curtain .strands {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+}
+
+.piece-curtain .char {
+  position: absolute;
+  left: 0;
+  top: 0;
+  width: 64px;
+  height: 64px;
+  margin: -32px 0 0 -32px;
+  display: grid;
+  place-items: center;
+  font-family: "PingFang SC", "Hiragino Sans GB", "Noto Sans SC", "Microsoft YaHei", sans-serif;
+  font-weight: 500;
+  font-size: 64px;
+  line-height: 64px;
+  color: #4565ad;
+  will-change: transform;
+}

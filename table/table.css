@@ -1,0 +1,35 @@
+/* The table's own parts, scoped so several pieces can share one page (the room).
+   mount() adds .piece-table to the 2048 × 2048 stage it draws into. */
+
+/* body and wheels roll together; the body alone sways */
+.piece-table .table, .piece-table .body {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  will-change: transform;
+}
+
+.piece-table .body img {
+  position: absolute;
+  inset: 0;
+  width: 2048px;
+  height: 2048px;
+}
+
+/* a 轮 on each leg, centred on its axle */
+.piece-table .wheel {
+  position: absolute;
+  left: 0;
+  top: 0;
+  width: 124px;
+  height: 124px;
+  margin: -62px 0 0 -62px;
+  display: grid;
+  place-items: center;
+  font-family: "PingFang SC", "Hiragino Sans GB", "Noto Sans SC", "Microsoft YaHei", sans-serif;
+  font-weight: 500;
+  font-size: 124px;
+  line-height: 124px;
+  color: #4565ad;
+  will-change: transform;
+}

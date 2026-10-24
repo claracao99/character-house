@@ -1,0 +1,75 @@
+/* The clock's own parts, scoped so several pieces can share one page (the room).
+   mount() adds .piece-clock to the 2048 × 2048 stage it draws into. */
+
+/* Everything drawn on the clock is coral, so it reads against the light-blue case (also in
+   the dark). */
+.piece-clock { --clock-ink: #e0694c; }
+
+/* On top of the face and pendulum, so they only show through the holes */
+.piece-clock .clock {
+  position: absolute;
+  inset: 0;
+  width: 2048px;
+  height: 2048px;
+  pointer-events: none;
+}
+
+.piece-clock .face, .piece-clock .pendulum {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+}
+
+/* plain numbers around the inside of the face */
+.piece-clock .number {
+  position: absolute;
+  left: 0;
+  top: 0;
+  width: 56px;
+  height: 38px;
+  margin: -19px 0 0 -28px;
+  display: grid;
+  place-items: center;
+  font: 500 34px/38px system-ui, -apple-system, "Helvetica Neue", Arial, sans-serif;
+  font-variant-numeric: tabular-nums;
+  letter-spacing: -0.02em;
+  color: var(--clock-ink);
+}
+
+/* hands and the dot they turn on: plain deep blue */
+.piece-clock .hand, .piece-clock .dot {
+  position: absolute;
+  left: 0;
+  top: 0;
+  background: var(--clock-ink);
+  pointer-events: none;
+  will-change: transform;
+}
+
+.piece-clock .dot { border-radius: 50%; }
+
+/* the pendulum: a column of 钟 for the rod, a bigger 钟 for the bob */
+.piece-clock .rod, .piece-clock .bob {
+  position: absolute;
+  left: 0;
+  top: 0;
+  width: 52px;
+  height: 52px;
+  margin: -26px 0 0 -26px;
+  display: grid;
+  place-items: center;
+  font-family: "PingFang SC", "Hiragino Sans GB", "Noto Sans SC", "Microsoft YaHei", sans-serif;
+  font-weight: 500;
+  font-size: 52px;
+  line-height: 52px;
+  color: var(--clock-ink);
+  will-change: transform;
+}
+
+.piece-clock .bob {
+  width: 84px;
+  height: 84px;
+  margin: -42px 0 0 -42px;
+  font-size: 84px;
+  line-height: 84px;
+}

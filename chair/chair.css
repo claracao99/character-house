@@ -1,0 +1,40 @@
+/* The chair's own parts, scoped so several pieces can share one page (the room).
+   mount() adds .piece-chair to the 2048 × 2048 stage it draws into. */
+
+/* Chair image + rocker characters: one rigid body, rotated and rolled by chair.js */
+.piece-chair .chair {
+  position: absolute;
+  inset: 0;
+  width: 2048px;
+  height: 2048px;
+  pointer-events: none;
+  will-change: transform;
+}
+
+.piece-chair .chair img {
+  position: absolute;
+  inset: 0;
+  width: 2048px;
+  height: 2048px;
+}
+
+.piece-chair .rocker {
+  position: absolute;
+  inset: 0;
+}
+
+.piece-chair .char {
+  position: absolute;
+  left: 0;
+  top: 0;
+  width: 64px;
+  height: 64px;
+  margin: -32px 0 0 -32px;
+  display: grid;
+  place-items: center;
+  font-family: "PingFang SC", "Hiragino Sans GB", "Noto Sans SC", "Microsoft YaHei", sans-serif;
+  font-weight: 500;
+  font-size: 64px;
+  line-height: 64px;
+  color: #4565AD;
+}

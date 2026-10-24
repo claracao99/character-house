@@ -1,0 +1,89 @@
+* { box-sizing: border-box; margin: 0; padding: 0; }
+
+/* Each piece on its own background, a colour complementary to it (dictionary.js sets --bg);
+   the same in both themes, because it's part of the piece. */
+html, body {
+  height: 100%;
+  overflow: hidden;
+  background: var(--bg, #c8c0f0);
+  transition: background-color 0.3s ease;
+  color: #4565ad;
+  font: 500 14px/1.4 system-ui, -apple-system, sans-serif;
+}
+
+/* The piece's design frame (1254² or 2048²), scaled to fit the viewport by dictionary.js.
+   Fixed, so the unscaled frame can't widen the layout viewport on phones. */
+.stage {
+  position: fixed;
+  left: 50%;
+  top: 50%;
+  transform-origin: 0 0;
+  touch-action: none;
+  user-select: none;
+  -webkit-user-select: none;
+}
+
+.stage.can-grab { cursor: grab; }
+.stage.grabbing { cursor: grabbing; }
+
+/* Quiet way around the house: the name and the other page, both back to the room */
+.nav {
+  position: fixed;
+  top: 24px;
+  left: 24px;
+  right: 24px;
+  z-index: 1;
+  display: flex;
+  justify-content: space-between;
+  pointer-events: none;
+}
+
+.nav a {
+  pointer-events: auto;
+  color: inherit;
+  text-decoration: none;
+}
+
+/* the character and its meaning, small, bottom centre */
+.entry {
+  position: fixed;
+  left: 0;
+  right: 0;
+  bottom: calc(24px + env(safe-area-inset-bottom));
+  z-index: 1;
+  text-align: center;
+  pointer-events: none;
+}
+
+.entry .glyph {
+  font-family: "PingFang SC", "Hiragino Sans GB", "Noto Sans SC", "Microsoft YaHei", sans-serif;
+  font-size: 16px;
+}
+
+/* previous / next, at the middle of each side; the hit area is bigger than the arrow */
+.turn {
+  position: fixed;
+  top: 50%;
+  z-index: 1;
+  width: 48px;
+  height: 48px;
+  margin-top: -24px;
+  display: grid;
+  place-items: center;
+  padding: 0;
+  border: 0;
+  border-radius: 50%;
+  background: none;
+  color: inherit;
+  cursor: pointer;
+  -webkit-tap-highlight-color: transparent;
+}
+
+.turn.prev { left: 12px; }
+.turn.next { right: 12px; }
+.turn svg { width: 20px; height: 20px; fill: currentColor; }
+.turn:focus-visible { outline: 2px solid currentColor; outline-offset: -4px; }
+
+@media (prefers-reduced-motion: reduce) {
+  html, body { transition: none; }
+}

@@ -6,7 +6,7 @@ you pull to switch it).
 
 One page (`index.html`, `house.js`, `style.css`): one piece at a time, full screen and
 live, on its own background colour, with ← → to turn the page. `#lamp`, `#curtain`,
-`#chair`, `#clock`, `#table` open a piece; each piece folder's `index.html` redirects there.
+`#chair`, `#clock`, `#table`, `#pram` open a piece; each piece folder's `index.html` redirects there.
 
 The lamp's cord switches the theme for the whole house (dark = lamp on): each piece's
 background turns to a night version of its colour, and the deep-blue characters turn light
@@ -15,7 +15,7 @@ blue. The theme persists in localStorage (`character-house-theme`).
 Pieces:
 
 - One folder per piece of furniture (`lamp/`, `curtain/`, `chair/`, `clock/`,
-  `table/`), plain HTML/JS, no build.
+  `table/`, `pram/`), plain HTML/JS, no build.
 - Each piece lives in `<piece>/<piece>.js` as `mount(stage)` (scoped styles in
   `<piece>.css`), returning `{ STAGE, toStage, hit, down, move, up, leave,
   step, destroy }`, which `house.js` mounts. The lamp file also keeps the floor

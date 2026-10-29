@@ -8,6 +8,7 @@ import * as curtain from "./curtain/curtain.js";
 import * as chair from "./chair/chair.js";
 import * as clock from "./clock/clock.js";
 import * as table from "./table/table.js";
+import * as pram from "./pram/pram.js";
 import { playSound, unlockOnGesture, soundEnabled, setSoundEnabled } from "./sound.js";
 
 // Pulling the lamp's cord switches it on and off: dark (on) or light (off), for the whole
@@ -33,6 +34,7 @@ const PIECES = [
   { key: "chair", module: chair, glyph: "椅", meaning: "Rocking chair", bg: "#9cd6dc", night: "#193134" },
   { key: "clock", module: clock, glyph: "钟", meaning: "Clock", bg: "#f6dc8c", night: "#342d19" },
   { key: "table", module: table, glyph: "轮", meaning: "Wheel", bg: "#c5dfa0", night: "#293419" },
+  { key: "pram", module: pram, glyph: "车", meaning: "Cart", bg: "#b4d2f0", night: "#192634" },
 ];
 
 // --- DOM ---------------------------------------------------------------------------------

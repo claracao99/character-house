@@ -1,0 +1,35 @@
+/* The pram's own parts, scoped to its stage.
+   mount() adds .piece-pram to the 2048 × 2048 stage it draws into. */
+
+/* body and wheels roll together; the body alone sways */
+.piece-pram .pram, .piece-pram .body {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  will-change: transform;
+}
+
+.piece-pram .body img {
+  position: absolute;
+  inset: 0;
+  width: 2048px;
+  height: 2048px;
+}
+
+/* a 车 behind each hub, centred on its axle */
+.piece-pram .wheel {
+  position: absolute;
+  left: 0;
+  top: 0;
+  width: 340px;
+  height: 340px;
+  margin: -170px 0 0 -170px;
+  display: grid;
+  place-items: center;
+  font-family: "PingFang SC", "Hiragino Sans GB", "Noto Sans SC", "Microsoft YaHei", sans-serif;
+  font-weight: 500;
+  font-size: 340px;
+  line-height: 340px;
+  color: #4565ad;
+  will-change: transform;
+}

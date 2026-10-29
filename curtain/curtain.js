@@ -35,7 +35,7 @@ export const BOUNDS = { x0: 411, y0: 250, x1: 1637, y1: 1757 };
 const STEP = 1 / 120;
 const SUBSTEPS = 10;
 const GRAVITY = 3900; // the lamp's 2400 scaled to the bigger frame
-const AIR_DRAG = 4; // 1/s
+const AIR_DRAG = 6; // 1/s, calm: strands settle without swinging on
 const RADIUS = 26; // collision radius of a character
 
 const LINK_COMPLIANCE = 1e-6; // strands barely stretch
@@ -48,8 +48,8 @@ const STRAND_REACH = 52; // ...whenever their characters are within this of each
 const STRAND_COMPLIANCE = 2e-7; // firm enough that glyphs never sit on top of each other
 
 const HAND_RADIUS = 90; // the pointer as a round body moving through the curtain
-const HAND_PUSH = 90000; // px/s² at its centre, fading to 0 at the edge
-const HAND_CARRY = 6; // 1/s, how strongly strands are dragged along with its motion
+const HAND_PUSH = 9000; // px/s² at its centre, fading to 0 at the edge; sideways only
+const HAND_CARRY = 2; // 1/s, how strongly strands drift along with its sideways motion
 const HAND_SPEED_MAX = 2500; // ignore flicks faster than this
 
 const GRAB_COMPLIANCE = 1e-4; // softness of the hand when holding a character
@@ -160,9 +160,10 @@ export function mount(stage) {
           const dx = n.x - hand.x, dy = n.y - hand.y;
           const d = Math.hypot(dx, dy);
           if (d < HAND_RADIUS && d > 1e-3) {
+            // a gentle sideways nudge: strands part around the hand and drift with it, but
+            // are never lifted (a vertical push is what curled them up over the rod)
             const f = 1 - d / HAND_RADIUS;
-            n.vx += ((dx / d) * HAND_PUSH * f + (hand.vx - n.vx) * HAND_CARRY * f) * h;
-            n.vy += ((dy / d) * HAND_PUSH * f + (hand.vy - n.vy) * HAND_CARRY * f) * h;
+            n.vx += (Math.sign(dx) * HAND_PUSH * f + (hand.vx - n.vx) * HAND_CARRY * f) * h;
           }
         }
       }

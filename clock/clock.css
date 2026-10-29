@@ -20,20 +20,16 @@
   pointer-events: none;
 }
 
-/* plain numbers around the inside of the face */
-.piece-clock .number {
+/* a dot for each hour around the inside of the face */
+.piece-clock .mark {
   position: absolute;
   left: 0;
   top: 0;
-  width: 56px;
-  height: 38px;
-  margin: -19px 0 0 -28px;
-  display: grid;
-  place-items: center;
-  font: 500 34px/38px system-ui, -apple-system, "Helvetica Neue", Arial, sans-serif;
-  font-variant-numeric: tabular-nums;
-  letter-spacing: -0.02em;
-  color: var(--clock-ink);
+  width: 16px;
+  height: 16px;
+  margin: -8px 0 0 -8px;
+  border-radius: 50%;
+  background: var(--clock-ink);
 }
 
 /* hands and the dot they turn on: plain deep blue */

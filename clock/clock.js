@@ -30,7 +30,7 @@ export const BOUNDS = { x0: 781, y0: 92, x1: 1266, y1: 1953 };
 const STEP = 1 / 120;
 const SUBSTEPS = 4;
 
-const NUMBER_RADIUS = 110; // from the centre of the face to the centre of each number
+const MARK_RADIUS = 118; // from the centre of the face to the centre of each hour dot
 const HOUR = { length: 56, width: 10 };
 const MINUTE = { length: 88, width: 7 };
 const DOT = 20; // the centre dot the hands turn on
@@ -106,9 +106,9 @@ export function mount(stage) {
   faceEl.setAttribute("aria-hidden", "true");
   for (let k = 1; k <= 12; k++) {
     const a = (k * Math.PI) / 6;
-    const el = make(faceEl, "number", String(k));
+    const el = make(faceEl, "mark");
     el.style.transform =
-      `translate(${FACE.x + NUMBER_RADIUS * Math.sin(a)}px, ${FACE.y - NUMBER_RADIUS * Math.cos(a)}px)`;
+      `translate(${FACE.x + MARK_RADIUS * Math.sin(a)}px, ${FACE.y - MARK_RADIUS * Math.cos(a)}px)`;
   }
 
   // A hand is a rounded bar standing on the centre, turned about its foot.

@@ -7,7 +7,6 @@ import * as lamp from "./lamp/lamp.js";
 import * as curtain from "./curtain/curtain.js";
 import * as chair from "./chair/chair.js";
 import * as clock from "./clock/clock.js";
-import * as table from "./table/table.js";
 import * as pram from "./pram/pram.js";
 import { playSound, unlockOnGesture, soundEnabled, setSoundEnabled } from "./sound.js";
 
@@ -33,7 +32,6 @@ const PIECES = [
   { key: "curtain", module: curtain, glyph: "帘", meaning: "Curtain", bg: "#a9dcc6", night: "#193428" },
   { key: "chair", module: chair, glyph: "椅", meaning: "Chair", bg: "#9cd6dc", night: "#193134" },
   { key: "clock", module: clock, glyph: "钟", meaning: "Clock", bg: "#f6dc8c", night: "#342d19" },
-  { key: "table", module: table, glyph: "轮", meaning: "Wheel", bg: "#c5dfa0", night: "#293419" },
   { key: "pram", module: pram, glyph: "轮", meaning: "Wheel", bg: "#b4d2f0", night: "#192634" },
 ];
 

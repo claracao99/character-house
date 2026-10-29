@@ -1,8 +1,8 @@
 // Pram on two wheels of 轮.
 //
-// The table's idea on a pram: it rolls along an invisible floor. Grab it anywhere and push:
-// it follows the hand on a soft spring, keeps its momentum when let go and slows with rolling
-// friction, stopping softly at the ends of the frame. Each wheel turns by the distance
+// It rolls along an invisible floor. Grab it anywhere and push: it follows the hand on a soft
+// spring, keeps its momentum when let go and slows with rolling friction, stopping softly at
+// the ends of the frame. Each wheel turns by the distance
 // travelled over its radius, so the 轮 spins at the right speed and the right way. A sharp
 // start or stop sways the body a touch (under a degree, heavily damped). All units are
 // design-frame pixels (2048²).

@@ -58,7 +58,7 @@ export const SOUNDS = {
     { noise: { filter: "lowpass", freq: 900, q: 0.7 }, decay: 0.02, gain: 0.16 },
     { type: "sine", freq: [D5, A4], attack: 0.003, decay: 0.05, gain: 0.18 },
   ],
-  // rolling table: a tiny soft bump against a wall
+  // rolling pram: a tiny soft bump against a wall
   bump: [
     { noise: { filter: "lowpass", freq: 600, q: 0.7 }, decay: 0.015, gain: 0.18 },
     { type: "sine", freq: [A3, D3], attack: 0.002, decay: 0.07, gain: 0.22 },
@@ -138,7 +138,7 @@ const log = (name, gain) => window.__sounds?.push({
   name, gain: +gain.toFixed(2), t: +(performance.now() / 1000).toFixed(3),
 });
 
-// A continuous sound that follows a level instead of playing once: the table's rolling rumble
+// A continuous sound that follows a level instead of playing once: the pram's rolling rumble
 // (low filtered noise). `set(level)` takes 0–1 and glides there; 0 is silent.
 const RUMBLE = { freq: 260, q: 0.8, gain: 0.12 };
 export function rumble() {

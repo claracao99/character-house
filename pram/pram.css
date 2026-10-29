@@ -21,15 +21,15 @@
   position: absolute;
   left: 0;
   top: 0;
-  width: 340px;
-  height: 340px;
-  margin: -170px 0 0 -170px;
+  width: 240px;
+  height: 240px;
+  margin: -120px 0 0 -120px;
   display: grid;
   place-items: center;
   font-family: "PingFang SC", "Hiragino Sans GB", "Noto Sans SC", "Microsoft YaHei", sans-serif;
   font-weight: 500;
-  font-size: 340px;
-  line-height: 340px;
+  font-size: 240px;
+  line-height: 240px;
   color: #4565ad;
   will-change: transform;
 }

@@ -20,7 +20,7 @@ const CHAR = "轮";
 
 // Axles at the centres of the round hubs the struts end in (discs about 96px across).
 const AXLES = [{ x: 772.5, y: 1435 }, { x: 1571.5, y: 1435 }];
-const WHEEL = 340; // the wheel's character, centred on its axle, in front of the hub
+const WHEEL = 240; // the wheel's character, centred on its axle, in front of the hub
 const WHEEL_RADIUS = WHEEL * 0.45; // from the axle to the glyph's bottom edge: rolls on the floor
 const FLOOR = AXLES[0].y + WHEEL_RADIUS;
 

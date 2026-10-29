@@ -27,18 +27,20 @@ const toggleTheme = () => {
 // In order. The English word is the character's meaning; `bg` is the piece's own colour,
 // complementary to it, picked by eye, and `night` the same hue in the dark.
 const PIECES = [
-  { key: "lamp", module: lamp, glyph: "灯", meaning: "Lamp", bg: "#c8c0f0", night: "#1d1934",
+  { key: "lamp", module: lamp, glyph: "灯", pinyin: "dēng", strokes: 6, meaning: "Lamp", bg: "#c8c0f0", night: "#1d1934",
     mount: (el) => lamp.mount(el, lamp.TABLE_LAMP, { onToggle: toggleTheme }) },
-  { key: "curtain", module: curtain, glyph: "帘", meaning: "Curtain", bg: "#a9dcc6", night: "#193428" },
-  { key: "chair", module: chair, glyph: "椅", meaning: "Chair", bg: "#9cd6dc", night: "#193134" },
-  { key: "clock", module: clock, glyph: "钟", meaning: "Clock", bg: "#f6dc8c", night: "#342d19" },
-  { key: "pram", module: pram, glyph: "轮", meaning: "Wheel", bg: "#b4d2f0", night: "#192634" },
+  { key: "curtain", module: curtain, glyph: "帘", pinyin: "lián", strokes: 8, meaning: "Curtain", bg: "#a9dcc6", night: "#193428" },
+  { key: "chair", module: chair, glyph: "椅", pinyin: "yǐ", strokes: 12, meaning: "Chair", bg: "#9cd6dc", night: "#193134" },
+  { key: "clock", module: clock, glyph: "钟", pinyin: "zhōng", strokes: 9, meaning: "Clock", bg: "#f6dc8c", night: "#342d19" },
+  { key: "pram", module: pram, glyph: "轮", pinyin: "lún", strokes: 8, meaning: "Wheel", bg: "#b4d2f0", night: "#192634" },
 ];
 
 // --- DOM ---------------------------------------------------------------------------------
 
 const stage = document.getElementById("stage");
 const entry = document.getElementById("entry");
+// Layout options for the entry, to compare (?entry=1–4); one will stay.
+document.documentElement.dataset.entry = new URLSearchParams(location.search).get("entry") ?? "1";
 
 let index = -1, piece = null;
 
@@ -61,7 +63,7 @@ const show = (i) => {
   i = (i + PIECES.length) % PIECES.length;
   if (i === index) return;
   index = i;
-  const { key, module: m, glyph, meaning } = PIECES[i];
+  const { key, module: m, glyph, pinyin, strokes, meaning } = PIECES[i];
   piece?.destroy();
   stage.className = "stage";
   stage.style.width = stage.style.height = `${m.STAGE}px`;
@@ -69,7 +71,9 @@ const show = (i) => {
   fit();
   paint();
   entry.querySelector(".glyph").textContent = glyph;
+  entry.querySelector(".pinyin").textContent = pinyin;
   entry.querySelector(".meaning").textContent = meaning;
+  entry.querySelector(".strokes").textContent = `${strokes} strokes`;
   document.title = `${glyph} ${meaning} · Character House`;
   history.replaceState(null, "", `#${key}`);
 };

@@ -142,7 +142,7 @@ export function mount(stage) {
   stage.classList.add("piece-chair");
   const chairEl = document.createElement("div");
   chairEl.className = "chair";
-  chairEl.setAttribute("aria-label", "Rocking chair");
+  chairEl.setAttribute("aria-label", "Chair");
   const img = document.createElement("img");
   img.src = IMAGE;
   img.alt = "Coral lounge chair";

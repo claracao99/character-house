@@ -31,7 +31,7 @@ const PIECES = [
   { key: "lamp", module: lamp, glyph: "灯", meaning: "Lamp", bg: "#c8c0f0", night: "#1d1934",
     mount: (el) => lamp.mount(el, lamp.TABLE_LAMP, { onToggle: toggleTheme }) },
   { key: "curtain", module: curtain, glyph: "帘", meaning: "Curtain", bg: "#a9dcc6", night: "#193428" },
-  { key: "chair", module: chair, glyph: "椅", meaning: "Rocking chair", bg: "#9cd6dc", night: "#193134" },
+  { key: "chair", module: chair, glyph: "椅", meaning: "Chair", bg: "#9cd6dc", night: "#193134" },
   { key: "clock", module: clock, glyph: "钟", meaning: "Clock", bg: "#f6dc8c", night: "#342d19" },
   { key: "table", module: table, glyph: "轮", meaning: "Wheel", bg: "#c5dfa0", night: "#293419" },
   { key: "pram", module: pram, glyph: "车", meaning: "Cart", bg: "#b4d2f0", night: "#192634" },

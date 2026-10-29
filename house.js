@@ -34,7 +34,7 @@ const PIECES = [
   { key: "chair", module: chair, glyph: "椅", meaning: "Chair", bg: "#9cd6dc", night: "#193134" },
   { key: "clock", module: clock, glyph: "钟", meaning: "Clock", bg: "#f6dc8c", night: "#342d19" },
   { key: "table", module: table, glyph: "轮", meaning: "Wheel", bg: "#c5dfa0", night: "#293419" },
-  { key: "pram", module: pram, glyph: "车", meaning: "Cart", bg: "#b4d2f0", night: "#192634" },
+  { key: "pram", module: pram, glyph: "轮", meaning: "Wheel", bg: "#b4d2f0", night: "#192634" },
 ];
 
 // --- DOM ---------------------------------------------------------------------------------

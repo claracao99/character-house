@@ -16,7 +16,7 @@
   height: 2048px;
 }
 
-/* a 车 behind each hub, centred on its axle */
+/* a 轮 over each hub, centred on its axle */
 .piece-pram .wheel {
   position: absolute;
   left: 0;

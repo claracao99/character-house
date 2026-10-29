@@ -1,9 +1,9 @@
-// Pram on two wheels of 车.
+// Pram on two wheels of 轮.
 //
 // The table's idea on a pram: it rolls along an invisible floor. Grab it anywhere and push:
 // it follows the hand on a soft spring, keeps its momentum when let go and slows with rolling
 // friction, stopping softly at the ends of the frame. Each wheel turns by the distance
-// travelled over its radius, so the 车 spins at the right speed and the right way. A sharp
+// travelled over its radius, so the 轮 spins at the right speed and the right way. A sharp
 // start or stop sways the body a touch (under a degree, heavily damped). All units are
 // design-frame pixels (2048²).
 //
@@ -14,13 +14,13 @@ import { playSound, rumble } from "../sound.js";
 
 export const STAGE = 2048;
 export const IMAGE = new URL("assets/pram.png", import.meta.url).href;
-const CHAR = "车";
+const CHAR = "轮";
 
 // --- Pram silhouette, measured from the image's alpha --------------------------------------
 
 // Axles at the centres of the round hubs the struts end in (discs about 96px across).
 const AXLES = [{ x: 772.5, y: 1435 }, { x: 1571.5, y: 1435 }];
-const WHEEL = 340; // the wheel's character, centred on its axle, behind the hub
+const WHEEL = 340; // the wheel's character, centred on its axle, in front of the hub
 const WHEEL_RADIUS = WHEEL * 0.45; // from the axle to the glyph's bottom edge: rolls on the floor
 const FLOOR = AXLES[0].y + WHEEL_RADIUS;
 
@@ -75,7 +75,7 @@ export function mount(stage) {
   stage.classList.add("piece-pram");
   const pramEl = document.createElement("div");
   pramEl.className = "pram";
-  pramEl.setAttribute("aria-label", "Cart");
+  pramEl.setAttribute("aria-label", "Wheel");
   const bodyEl = document.createElement("div");
   bodyEl.className = "body";
   const img = document.createElement("img");
@@ -91,7 +91,7 @@ export function mount(stage) {
     el.textContent = CHAR;
     return el;
   });
-  pramEl.append(...wheelEls, bodyEl);
+  pramEl.append(bodyEl, ...wheelEls);
   stage.append(pramEl);
 
   let mask = null; // image alpha, once decoded

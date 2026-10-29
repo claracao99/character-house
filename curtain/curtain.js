@@ -1,6 +1,6 @@
 // Bead curtain made of characters, simulated with XPBD (extended position-based dynamics).
 //
-// Strands of 帘 hang from the rod across the doorway. Each strand is a chain of slightly
+// Strands of 帘 hang from the rings along the rod. Each strand is a chain of slightly
 // elastic links pinned at the rod, like the lamp's cord. The pointer is a soft round body
 // moving through them: strands part around it, brush their neighbours, then sway back and
 // settle. Characters can also be grabbed and dragged. All units are design-frame pixels (2048²).
@@ -17,16 +17,18 @@ export const IMAGE = new URL("assets/curtain.png", import.meta.url).href;
 
 // --- Door frame, measured from the image's alpha ------------------------------------------
 
-const ROD_Y = 316; // rod spans y 271–326 in the opening; strands hang from just above its lower edge
-const OPEN_X0 = 704; // inner edge of the left post
-const OPEN_X1 = 1345; // inner edge of the right post
+const ROD_Y = 336; // rod spans y 267–285; the rings hang under it to y 340, strands from their bottoms
+const OPEN_X0 = 522; // inner edge of the left post
+const OPEN_X1 = 1525; // inner edge of the right post
 
-const STRANDS = 9; // ~71px apart, a little more than one character
-const LENGTH = 18; // characters per strand; ends around knee height (posts end at 1795)
+// One strand from each ring, at the ring's centre (~96px apart, half again a character).
+const RINGS = [640, 745, 844, 937, 1027, 1114, 1204, 1300, 1407];
+const STRANDS = RINGS.length;
+const LENGTH = 18; // characters per strand; ends around knee height (feet at 1757)
 
-// Where the posts meet the floor, and the opaque box of the art (for placing it in a room).
-export const FOOT = { x: 1024, y: 1795 };
-export const BOUNDS = { x0: 457, y0: 253, x1: 1591, y1: 1795 };
+// Where the feet meet the floor, and the opaque box of the art.
+export const FOOT = { x: 1024, y: 1757 };
+export const BOUNDS = { x0: 411, y0: 250, x1: 1637, y1: 1757 };
 
 // --- Tuning ------------------------------------------------------------------------------
 
@@ -86,7 +88,7 @@ export function mount(stage) {
   const img = document.createElement("img");
   img.className = "frame";
   img.src = IMAGE;
-  img.alt = "Pink door frame with a curtain rod";
+  img.alt = "Coral curtain stand with a rod and rings";
   img.draggable = false;
   stage.append(strandsEl, img);
 
@@ -105,15 +107,12 @@ export function mount(stage) {
 
   // --- Simulation ------------------------------------------------------------------------
 
-  // strands[s][0] is pinned to the rod; strands[s][i + 1] is the bottom of character i.
-  const pitch = (OPEN_X1 - OPEN_X0) / STRANDS;
-  const strands = Array.from({ length: STRANDS }, (_, s) => {
-    const x = OPEN_X0 + pitch * (s + 0.5);
-    return Array.from({ length: LENGTH + 1 }, (_, i) => ({
+  // strands[s][0] is pinned under its ring; strands[s][i + 1] is the bottom of character i.
+  const strands = RINGS.map((x) =>
+    Array.from({ length: LENGTH + 1 }, (_, i) => ({
       x, y: ROD_Y + i * SEG, px: 0, py: 0, vx: 0, vy: 0,
       w: i === 0 ? 0 : 1, // inverse mass; the pin doesn't move
-    }));
-  });
+    })));
 
   const grab = { node: null, ox: 0, oy: 0, tx: 0, ty: 0 };
 

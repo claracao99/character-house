@@ -45,7 +45,7 @@ const MIN_GAP = 58; // characters on a strand never overlap
 
 const STRAND_GAP = 62; // side by side, neighbouring strands keep at least this far apart
 const STRAND_REACH = 52; // ...whenever their characters are within this of each other vertically
-const STRAND_COMPLIANCE = 2e-7; // firm enough that glyphs never sit on top of each other
+const STRAND_COMPLIANCE = 2e-5; // soft: strands gather against each other; stiffer chain-reacts and curls them
 
 const HAND_RADIUS = 90; // the pointer as a round body moving through the curtain
 const HAND_PUSH = 9000; // px/s² at its centre, fading to 0 at the edge; sideways only

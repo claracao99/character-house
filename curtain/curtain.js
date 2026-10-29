@@ -46,6 +46,7 @@ const MIN_GAP = 58; // characters on a strand never overlap
 const STRAND_GAP = 62; // side by side, neighbouring strands keep at least this far apart
 const STRAND_REACH = 52; // ...whenever their characters are within this of each other vertically
 const STRAND_COMPLIANCE = 2e-5; // soft: strands gather against each other; stiffer chain-reacts and curls them
+const CONTACT_DAMPING = 0.3; // per substep: touching strands lose most of their speed apart, so they rest against each other instead of bouncing
 
 const HAND_RADIUS = 90; // the pointer as a round body moving through the curtain
 const HAND_PUSH = 9000; // px/s² at its centre, fading to 0 at the edge; sideways only
@@ -57,6 +58,8 @@ const HIT_RADIUS = 34;
 
 const CLICK_SPEED = 260; // px/s: strands brushing slower than this are silent
 const CLICK_FULL = 1600; // ...and click at full volume from this
+const BRUSH_REACH = 32; // px: the hand passing this close to a strand brushes it (a click)
+const BRUSH_SPEED = 60; // px/s: a hand slower than this brushes silently
 
 // Alpha of an image as one byte per design pixel, for grabbing a piece by its silhouette.
 const readAlpha = (img, size, done) =>
@@ -120,6 +123,8 @@ export function mount(stage) {
   const hand = { on: false, x: 0, y: 0, vx: 0, vy: 0, fx: 0, fy: 0, tx: 0, ty: 0 };
 
   let impact = 0; // fastest knock between neighbouring strands since the last frame
+  const contacts = []; // this substep's touching pairs, flat: a, b, how squarely they touch
+  const brushed = new Array(STRANDS).fill(false); // the hand is against this strand
 
   // Move a and b along their axis so their distance changes by `delta` (split by inverse mass).
   const separate = (a, b, dx, dy, len, delta, alpha = 0) => {
@@ -163,7 +168,9 @@ export function mount(stage) {
             // a gentle sideways nudge: strands part around the hand and drift with it, but
             // are never lifted (a vertical push is what curled them up over the rod)
             const f = 1 - d / HAND_RADIUS;
-            n.vx += (Math.sign(dx) * HAND_PUSH * f + (hand.vx - n.vx) * HAND_CARRY * f) * h;
+            // dx / d, not the sign of dx: the push fades to nothing straight above and below
+            // the hand, so a character under it isn't shoved left and right in turn (shaking)
+            n.vx += ((dx / d) * HAND_PUSH * f + (hand.vx - n.vx) * HAND_CARRY * f) * h;
           }
         }
       }
@@ -207,13 +214,18 @@ export function mount(stage) {
         for (const a of strands[s]) {
           if (!a.w) continue;
           for (const b of strands[t]) {
-            if (!b.w || Math.abs(b.y - a.y) > STRAND_REACH) continue;
+            const dy = Math.abs(b.y - a.y);
+            if (!b.w || dy > STRAND_REACH) continue;
             const delta = b.x - a.x - gap;
             if (delta >= 0) continue;
             impact = Math.max(impact, Math.abs(a.vx - b.vx)); // for the beads' click
-            const d = delta / (a.w + b.w + alpha);
+            // face to face they push fully, fading to nothing at the edge of their reach, so a
+            // character swinging past another doesn't switch the contact on and off (jitter)
+            const touch = 1 - dy / STRAND_REACH;
+            const d = (delta * touch) / (a.w + b.w + alpha);
             a.x += a.w * d;
             b.x -= b.w * d;
+            contacts.push(a, b, touch);
           }
         }
       }
@@ -236,6 +248,15 @@ export function mount(stage) {
         b.vx -= b.w * imp * dx; b.vy -= b.w * imp * dy;
       }
     }
+
+    // and damp touching strands' sideways speed apart: contact is soft, not bouncy
+    for (let c = 0; c < contacts.length; c += 3) {
+      const a = contacts[c], b = contacts[c + 1];
+      const imp = ((b.vx - a.vx) * CONTACT_DAMPING * contacts[c + 2]) / (a.w + b.w);
+      a.vx += a.w * imp;
+      b.vx -= b.w * imp;
+    }
+    contacts.length = 0;
   };
 
   // --- Rendering -------------------------------------------------------------------------
@@ -348,6 +369,19 @@ export function mount(stage) {
       for (let s = 0; s < SUBSTEPS; s++) substep(STEP / SUBSTEPS);
     }
     render();
+
+    // the hand brushing into a strand clicks it, as softly as the hand is slow
+    const speed = Math.abs(hand.vx);
+    for (let s = 0; s < STRANDS; s++) {
+      const i = Math.round((hand.y - ROD_Y) / SEG);
+      const n = hand.on && i >= 0 && i <= LENGTH ? strands[s][i] : null;
+      const near = !!n && Math.abs(n.x - hand.x) < BRUSH_REACH;
+      if (near && !brushed[s] && speed > BRUSH_SPEED) {
+        const pitch = BEAD_PITCHES[Math.floor(Math.random() * BEAD_PITCHES.length)];
+        playSound("bead", { gain: 0.25 + 0.5 * Math.min(1, speed / CLICK_FULL), pitch });
+      }
+      brushed[s] = near;
+    }
 
     // the hardest knock this frame clicks, softly, on a D-major note
     if (impact > CLICK_SPEED) {

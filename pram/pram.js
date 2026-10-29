@@ -10,7 +10,7 @@
 // mount(stage) draws one pram into a 2048² element and returns its controls; the page owns
 // the pointer listeners and the animation loop. See house.js.
 
-import { rumble } from "../sound.js";
+import { playSound, rumble } from "../sound.js";
 
 export const STAGE = 2048;
 export const IMAGE = new URL("assets/pram.png", import.meta.url).href;
@@ -44,6 +44,7 @@ const SWAY_MAX = Math.PI / 180; // a degree at most
 const SWAY_FREQ = 9; // rad/s
 const SWAY_ZETA = 0.8; // heavily damped
 
+const QUARTER_TURN = Math.PI / 2; // the wheels tick once a quarter turn
 const RUMBLE_SPEED = 120; // px/s: slower than this rolls silently
 const RUMBLE_FULL = 1600; // px/s: full rumble
 const HIT_PAD = 10; // extra px around the wheels that still grabs
@@ -110,12 +111,15 @@ export function mount(stage) {
   const roll = (dx, dt) => {
     if (!dt) return;
     rolled = true;
+    const quarter = Math.floor(turn.a / QUARTER_TURN);
     turn.a += dx / WHEEL_RADIUS;
     const v = dx / dt;
     sway.w -= (v - turn.v) * SWAY_GAIN * SWAY_FREQ; // a kick against the change of speed
     turn.v = v;
     const speed = Math.abs(v);
-    sound.set(Math.max(0, Math.min(1, (speed - RUMBLE_SPEED) / (RUMBLE_FULL - RUMBLE_SPEED))));
+    const level = Math.max(0, Math.min(1, (speed - RUMBLE_SPEED) / (RUMBLE_FULL - RUMBLE_SPEED)));
+    sound.set(level);
+    if (level && Math.floor(turn.a / QUARTER_TURN) !== quarter) playSound("wheel", { gain: 0.4 + 0.6 * level });
   };
 
   const substep = (h) => {

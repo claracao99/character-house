@@ -45,32 +45,11 @@ export const SOUNDS = {
     { noise: { filter: "bandpass", freq: 2400, q: 2 }, decay: 0.005, gain: 0.05 },
     { type: "sine", freq: D5, attack: 0.001, decay: 0.02, gain: 0.025 },
   ],
-  // room: picking a piece up, setting it down, putting it away, and the drawer sliding
-  lift: [
-    { noise: { filter: "lowpass", freq: 1500, q: 0.7 }, decay: 0.01, gain: 0.06 },
-    { type: "sine", freq: [A4, D5], attack: 0.006, decay: 0.06, gain: 0.1 },
-  ],
-  thud: [
-    { noise: { filter: "lowpass", freq: 480, q: 0.7 }, decay: 0.03, gain: 0.32 },
-    { type: "sine", freq: [D4, D3], attack: 0.002, decay: 0.09, gain: 0.4 },
-  ],
-  pop: [
-    { noise: { filter: "lowpass", freq: 900, q: 0.7 }, decay: 0.02, gain: 0.16 },
-    { type: "sine", freq: [D5, A4], attack: 0.003, decay: 0.05, gain: 0.18 },
-  ],
-  // rolling pram: a tiny soft bump against a wall
-  bump: [
-    { noise: { filter: "lowpass", freq: 600, q: 0.7 }, decay: 0.015, gain: 0.18 },
-    { type: "sine", freq: [A3, D3], attack: 0.002, decay: 0.07, gain: 0.22 },
-  ],
-  slideOpen: [
-    { noise: { filter: "bandpass", freq: [500, 1400], q: 1.2 }, attack: 0.05, decay: 0.17,
-      gain: 0.07 },
-  ],
-  slideClose: [
-    { noise: { filter: "bandpass", freq: [1400, 500], q: 1.2 }, attack: 0.05, decay: 0.17,
-      gain: 0.07 },
-  ],
+  // pram: a soft wooden tick for each quarter turn of the wheels, so it speeds up with them
+  wheel: Object.assign([
+    { noise: { filter: "bandpass", freq: 1500, q: 1.5 }, decay: 0.008, gain: 0.12 },
+    { type: "sine", freq: [A4, D4], attack: 0.001, decay: 0.03, gain: 0.08 },
+  ], { gap: 0.05 }),
 };
 
 const VOLUME = 0.35;
@@ -140,7 +119,7 @@ const log = (name, gain) => window.__sounds?.push({
 
 // A continuous sound that follows a level instead of playing once: the pram's rolling rumble
 // (low filtered noise). `set(level)` takes 0–1 and glides there; 0 is silent.
-const RUMBLE = { freq: 260, q: 0.8, gain: 0.12 };
+const RUMBLE = { freq: 480, q: 0.8, gain: 0.14 }; // high enough for laptop speakers to play
 export function rumble() {
   let source = null, level = null, on = false;
   const start = () => {

@@ -48,7 +48,7 @@ const ESCAPEMENT = 0.35; // 1/s, how firmly it is nudged toward the idle swing
 const SWING_DAMPING = 0.08; // 1/s, plain air drag on top
 const WALL_BOUNCE = 0.25; // fraction of speed kept when the bob touches the window side
 const PULL_FREQ = 14; // rad/s, how tightly a held bob follows the pointer
-const TICK_GAIN = 0.6; // the tick-tock is always on, so keep it low
+const TICK_GAIN = 0.9; // the tick-tock is always on, so keep it low
 const KNOCK_SPEED = 0.15; // rad/s into the window side before it knocks
 
 const HIT_RADIUS = 30; // around the rod

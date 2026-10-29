@@ -1,17 +1,16 @@
 * { box-sizing: border-box; margin: 0; padding: 0; }
 
-/* Each piece on its own background, a colour complementary to it (dictionary.js sets --bg);
-   the same in both themes, because it's part of the piece. */
+/* Each piece on its own background, a colour complementary to it, and a night version of it
+   in the dark (house.js sets --bg). */
 html, body {
   height: 100%;
   overflow: hidden;
   background: var(--bg, #c8c0f0);
-  transition: background-color 0.3s ease;
   color: #4565ad;
   font: 500 14px/1.4 system-ui, -apple-system, sans-serif;
 }
 
-/* The piece's design frame (1254² or 2048²), scaled to fit the viewport by dictionary.js.
+/* The piece's design frame (1254² or 2048²), scaled to fit the viewport by house.js.
    Fixed, so the unscaled frame can't widen the layout viewport on phones. */
 .stage {
   position: fixed;
@@ -26,7 +25,7 @@ html, body {
 .stage.can-grab { cursor: grab; }
 .stage.grabbing { cursor: grabbing; }
 
-/* Quiet way around the house: the name and the other page, both back to the room */
+/* Quiet: the name, and the speaker that mutes the sound */
 .nav {
   position: fixed;
   top: 24px;
@@ -43,6 +42,32 @@ html, body {
   color: inherit;
   text-decoration: none;
 }
+
+/* the sound switch: just the speaker, the height of the nav text, with a finger-sized hit area */
+.sound {
+  pointer-events: auto;
+  position: relative;
+  width: 17px;
+  height: 17px;
+  margin: 0;
+  padding: 0;
+  border: 0;
+  background: none;
+  color: inherit;
+  cursor: pointer;
+  -webkit-tap-highlight-color: transparent;
+}
+
+.sound::before {
+  content: "";
+  position: absolute;
+  inset: -8px;
+}
+
+.sound svg { display: block; width: 100%; height: 100%; fill: currentColor; }
+.sound .off, .sound[aria-pressed="true"] .on { display: none; }
+.sound[aria-pressed="true"] .off { display: block; }
+.sound:focus-visible { outline: 2px solid currentColor; outline-offset: 4px; border-radius: 3px; }
 
 /* the character and its meaning, small, bottom centre */
 .entry {
@@ -83,6 +108,13 @@ html, body {
 .turn.next { right: 12px; }
 .turn svg { width: 20px; height: 20px; fill: currentColor; }
 .turn:focus-visible { outline: 2px solid currentColor; outline-offset: -4px; }
+
+/* In the dark the nav, the entry and the pieces' deep-blue characters turn light blue; the
+   furniture keeps its colours (the clock its coral), and the lamp glows. */
+html, body, .stage .char { transition: background-color 0.3s ease, color 0.3s ease; }
+:root[data-theme="dark"] body,
+:root[data-theme="dark"] .stage:not(.piece-clock) .char { color: #94add7; }
+:root[data-theme="dark"] .piece-lamp .glow { opacity: 1; }
 
 @media (prefers-reduced-motion: reduce) {
   html, body { transition: none; }

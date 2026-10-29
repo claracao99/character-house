@@ -4,7 +4,7 @@
 // every pitched note sits in D major so the sounds agree with each other.
 //
 // Silent until the first gesture (browsers keep audio locked until then). Off for anyone who
-// set localStorage.sound = "off" (the speaker button in the room's nav). On by default.
+// set localStorage.sound = "off" (the speaker button in the nav). On by default.
 
 // D major, around D5 587.33
 const D3 = 146.83, A3 = 220, D4 = 293.66, A4 = 440;

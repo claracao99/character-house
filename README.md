@@ -4,19 +4,13 @@ A house of physical furniture made from characters. Each piece is a small,
 tactile toy where the physics is the control (the lamp's cord of 灯 is a rope
 you pull to switch it).
 
-Two pages:
+One page (`index.html`, `house.js`, `style.css`): one piece at a time, full screen and
+live, on its own background colour, with ← → to turn the page. `#lamp`, `#curtain`,
+`#chair`, `#clock`, `#table` open a piece; each piece folder's `index.html` redirects there.
 
-- **Room** (`index.html`, `room.js`, `room.css`): the landing page. A room in
-  one celadon colour with a furniture drawer at the bottom: drag a card out to
-  place a piece, drag a piece back onto the drawer to put it away. Pieces keep
-  their live physics and share one real-world scale (px per cm, set by the
-  viewport). The floor lamp's cord switches the theme (dark = lamp on).
-  Placements persist in localStorage (`character-house-room`), the theme in
-  `character-house-theme`.
-- **Dictionary** (`dictionary/`): one piece at a time, full screen and live,
-  on its own background colour, with ← → to turn the page. `#lamp`, `#curtain`,
-  `#chair`, `#clock`, `#table` open a piece; each piece folder's `index.html`
-  redirects there.
+The lamp's cord switches the theme for the whole house (dark = lamp on): each piece's
+background turns to a night version of its colour, and the deep-blue characters turn light
+blue. The theme persists in localStorage (`character-house-theme`).
 
 Pieces:
 
@@ -24,13 +18,13 @@ Pieces:
   `table/`), plain HTML/JS, no build.
 - Each piece lives in `<piece>/<piece>.js` as `mount(stage)` (scoped styles in
   `<piece>.css`), returning `{ STAGE, toStage, hit, down, move, up, leave,
-  step, destroy }`; the room and the dictionary both mount it. The lamp file
-  has the table lamp (dictionary) and the floor lamp (`FLOOR_LAMP`, room).
-- Add a new piece to `PIECES` in `room.js` and in `dictionary/dictionary.js`.
+  step, destroy }`, which `house.js` mounts. The lamp file also keeps the floor
+  lamp (`FLOOR_LAMP`) from the old room page, unused.
+- Add a new piece to `PIECES` in `house.js`, with a `bg` and a `night` colour.
 
 Sound: `sound.js`, synthesised with Web Audio (no files), every pitch in D
 major; on by default, muted with `localStorage.sound = "off"` (the speaker in
-the room's nav).
+the nav).
 
 Serve the whole house: `python3 serve.py` (port 5180, no caching), then open
 http://localhost:5180.

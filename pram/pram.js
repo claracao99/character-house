@@ -10,7 +10,7 @@
 // mount(stage) draws one pram into a 2048² element and returns its controls; the page owns
 // the pointer listeners and the animation loop. See house.js.
 
-import { playSound, rumble } from "../sound.js";
+import { rumble } from "../sound.js";
 
 export const STAGE = 2048;
 export const IMAGE = new URL("assets/pram.png", import.meta.url).href;
@@ -36,8 +36,8 @@ const PUSH_DAMPING = 14; // 1/s, along the hand's pull
 const ROLL_FRICTION = 700; // px/s², rolling friction: a brisk push stops within about a second
 const ROLL_DRAG = 1.2; // 1/s, plus a little drag
 const SPEED_MAX = 2400; // px/s
-const END_BOUNCE = 0.15; // fraction of speed kept off the ends of the frame
-const MARGIN = 24; // px kept between the pram and the frame's edges
+const OFFSTAGE = 40; // px outside the edge of the screen it comes back in from
+const EDGE = 24; // px inside the edge of the screen it rolls back to if it stops half out
 
 const SWAY_GAIN = 0.00002; // rad per px/s² of acceleration
 const SWAY_MAX = Math.PI / 180; // a degree at most
@@ -46,7 +46,6 @@ const SWAY_ZETA = 0.8; // heavily damped
 
 const RUMBLE_SPEED = 120; // px/s: slower than this rolls silently
 const RUMBLE_FULL = 1600; // px/s: full rumble
-const BUMP_SPEED = 150; // px/s into an end before it bumps
 const HIT_PAD = 10; // extra px around the wheels that still grabs
 
 // Alpha of an image as one byte per design pixel, for grabbing a piece by its silhouette.
@@ -105,7 +104,6 @@ export function mount(stage) {
   const turn = { a: 0, v: 0 }; // wheels' angle, and the speed they last rolled at
   const sway = { a: 0, w: 0 };
   const sound = rumble();
-  const lo = MARGIN - BOUNDS.x0, hi = STAGE - MARGIN - BOUNDS.x1;
 
   // Rolling by dx (px) over dt (s): the wheels turn, a sharp change of speed sways the body.
   let rolled = false;
@@ -127,20 +125,57 @@ export function mount(stage) {
       const slow = (ROLL_FRICTION + ROLL_DRAG * Math.abs(cart.v)) * h;
       cart.v = Math.abs(cart.v) <= slow ? 0 : cart.v - Math.sign(cart.v) * slow;
     }
-    cart.v = Math.max(-SPEED_MAX, Math.min(SPEED_MAX, cart.v));
+    if (grab.on) cart.v = Math.max(-SPEED_MAX, Math.min(SPEED_MAX, cart.v)); // caps a flick
     cart.x += cart.v * h;
-
-    // the ends of the frame: a soft stop
-    if (cart.x < lo || cart.x > hi) {
-      const speed = Math.abs(cart.v);
-      if (speed > BUMP_SPEED) playSound("bump", { gain: Math.min(1, speed / 1200) });
-      cart.x = Math.max(lo, Math.min(hi, cart.x));
-      cart.v *= -END_BOUNCE;
-    }
 
     // sway: a damped spring back to upright
     sway.w += (-SWAY_FREQ * SWAY_FREQ * sway.a - 2 * SWAY_ZETA * SWAY_FREQ * sway.w) * h;
     sway.a = Math.max(-SWAY_MAX, Math.min(SWAY_MAX, sway.a + sway.w * h));
+  };
+
+  // Pushed off one side of the screen, it comes back in from the other: once it's out of
+  // sight it moves to just past the far edge and rolls in, slowing under the same friction as
+  // a push, to rest where it started. The screen is usually wider than the design frame, so
+  // the edges come from the stage's rendered box.
+  const view = () => {
+    const r = stage.getBoundingClientRect();
+    const s = r.width / STAGE;
+    return { x0: -r.left / s, x1: (innerWidth - r.left) / s };
+  };
+
+  // The speed that rolls `distance` px before friction and drag stop it (the inverse of the
+  // stopping distance v/k − a/k²·ln(1 + kv/a) under a = ROLL_FRICTION, k = ROLL_DRAG).
+  const speedToRoll = (distance) => {
+    const a = ROLL_FRICTION, k = ROLL_DRAG;
+    let lo = 0, hi = 4 * SPEED_MAX; // a wide screen needs more than a flick to cross
+    for (let i = 0; i < 40; i++) {
+      const v = (lo + hi) / 2;
+      if (v / k - (a / (k * k)) * Math.log(1 + (k * v) / a) < distance) lo = v; else hi = v;
+    }
+    return lo;
+  };
+
+  // Returns how far it jumped, 0 if it didn't. Stopped with only part of it out of sight, it
+  // rolls gently back into view instead, as if the edge were a slight slope.
+  const wrap = () => {
+    const v = view();
+    const left = BOUNDS.x0 + cart.x, right = BOUNDS.x1 + cart.x;
+    if (!grab.on && !cart.v) {
+      if (left < v.x0 && right > v.x0) cart.v = speedToRoll(v.x0 + EDGE - left);
+      else if (right > v.x1 && left < v.x1) cart.v = -speedToRoll(right - (v.x1 - EDGE));
+    }
+    let to = null;
+    if (right < v.x0 && cart.v <= 0) to = v.x1 + OFFSTAGE - BOUNDS.x0; // gone left
+    else if (left > v.x1 && cart.v >= 0) to = v.x0 - OFFSTAGE - BOUNDS.x1; // gone right
+    if (to === null) return 0;
+    const jump = to - cart.x;
+    cart.x = to;
+    cart.v = -Math.sign(to) * speedToRoll(Math.abs(to));
+    grab.on = false;
+    stage.classList.remove("grabbing");
+    turn.v = cart.v; // already rolling at this speed: no kick, no sway
+    sway.a = sway.w = 0;
+    return jump;
   };
 
   // --- Rendering -------------------------------------------------------------------------
@@ -195,8 +230,9 @@ export function mount(stage) {
 
   let acc = 0;
   const step = (dt) => {
-    const x0 = cart.x;
+    let x0 = cart.x;
     for (acc += dt; acc >= STEP; acc -= STEP) substep(STEP);
+    x0 += wrap(); // a jump to the other side isn't rolling
     if (cart.x !== x0 || (turn.v && !rolled)) roll(cart.x - x0, dt);
     rolled = false;
     render();

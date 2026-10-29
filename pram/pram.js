@@ -206,9 +206,11 @@ export function mount(stage) {
   };
   const hit = (p, pad = 0) => (onPram(p, pad) ? "body" : null);
 
-  // On its own page: grab anywhere and push; letting go keeps the push.
+  // Grab anywhere and push; letting go keeps the push. Once let go it's on its own: it can't be
+  // caught again until it has rolled to a stop.
+  const rolling = () => !grab.on && cart.v !== 0;
   const down = (p, e, pad) => {
-    if (!onPram(p, pad)) return false;
+    if (rolling() || !onPram(p, pad)) return false;
     Object.assign(grab, { on: true, ox: cart.x - p.x, tx: p.x });
     stage.classList.add("grabbing");
     return true;
@@ -216,7 +218,7 @@ export function mount(stage) {
 
   const move = (p) => {
     if (grab.on) grab.tx = p.x;
-    else stage.classList.toggle("can-grab", onPram(p));
+    else stage.classList.toggle("can-grab", !rolling() && onPram(p));
   };
 
   const up = () => {

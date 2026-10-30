@@ -96,6 +96,30 @@ html, body {
 
 /* --- Entry layouts to compare (?entry=1–4); one will stay ------------------------------- */
 
+/* the character sits in a calligraphy practice square (米字格): a solid frame, a dashed
+   cross and dashed diagonals, in the coral of red-ruled paper */
+.entry .glyph {
+  position: relative;
+  display: inline-grid;
+  place-items: center;
+  width: 1.5em;
+  height: 1.5em;
+  vertical-align: middle;
+  line-height: 1;
+}
+.entry .grid {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  overflow: visible;
+  fill: none;
+  stroke: #e0694c;
+}
+.entry .grid .frame { stroke-width: 1.5px; vector-effect: non-scaling-stroke; }
+.entry .grid .lines { stroke-width: 1px; stroke-dasharray: 3 3; vector-effect: non-scaling-stroke; opacity: 0.8; }
+.entry .hanzi { position: relative; }
+
 .entry .pinyin { font-style: italic; }
 .entry .pos { font-style: italic; opacity: 0.6; }
 .entry .strokes { display: none; opacity: 0.6; }
@@ -111,7 +135,7 @@ html, body {
   gap: 2px;
 }
 [data-entry="2"] .entry .pinyin { order: 1; font-size: 13px; }
-[data-entry="2"] .entry .glyph { order: 2; font-size: 40px; line-height: 1.1; }
+[data-entry="2"] .entry .glyph { order: 2; font-size: 40px; margin: 4px 0; }
 [data-entry="2"] .entry .pos { display: none; }
 [data-entry="2"] .entry .meaning { order: 3; }
 
@@ -126,7 +150,7 @@ html, body {
   align-items: end;
   text-align: left;
 }
-[data-entry="3"] .entry .glyph { grid-row: 1 / 3; font-size: 64px; line-height: 0.9; }
+[data-entry="3"] .entry .glyph { grid-row: 1 / 3; font-size: 56px; }
 [data-entry="3"] .entry .pinyin { grid-column: 2; font-size: 18px; align-self: end; }
 [data-entry="3"] .entry .pos, [data-entry="3"] .entry .meaning { grid-column: 2; grid-row: 2; }
 [data-entry="3"] .entry .pos { display: none; }

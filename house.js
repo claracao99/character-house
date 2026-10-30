@@ -44,10 +44,13 @@ document.documentElement.dataset.entry = new URLSearchParams(location.search).ge
 
 let index = -1, piece = null;
 
-const ROOM_FOR_TEXT = 96; // px of height kept for the nav above and the entry below
+// The piece is centred and kept clear of the entry below it (and as far from the nav above):
+// whatever height the entry has, plus its 24px off the bottom and a little air.
+const ROOM_MIN = 96;
 const fit = () => {
   if (!piece) return;
-  const scale = Math.min(innerWidth, innerHeight - ROOM_FOR_TEXT) / piece.STAGE;
+  const room = Math.max(ROOM_MIN, 2 * (24 + entry.offsetHeight + 8));
+  const scale = Math.min(innerWidth, innerHeight - room) / piece.STAGE;
   stage.style.transform = `scale(${scale}) translate(-50%, -50%)`;
 };
 addEventListener("resize", fit);
@@ -68,12 +71,12 @@ const show = (i) => {
   stage.className = "stage";
   stage.style.width = stage.style.height = `${m.STAGE}px`;
   piece = (PIECES[i].mount ?? m.mount)(stage);
-  fit();
   paint();
-  entry.querySelector(".glyph").textContent = glyph;
+  entry.querySelector(".hanzi").textContent = glyph;
   entry.querySelector(".pinyin").textContent = pinyin;
   entry.querySelector(".meaning").textContent = meaning;
   entry.querySelector(".strokes").textContent = `${strokes} strokes`;
+  fit(); // after the entry, which it's measured against
   document.title = `${glyph} ${meaning} · Character House`;
   history.replaceState(null, "", `#${key}`);
 };

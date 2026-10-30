@@ -5,6 +5,7 @@
 //   python3 serve.py                                    # in another terminal (port 5180)
 //   node scripts/render-videos.mjs [lamp curtain pram stills]   # default: all of them
 //   → ~/Downloads/character-house-social/
+//   node scripts/render-videos.mjs preview              # the link preview → preview.png
 //
 // Nothing is filmed. A headless Chrome runs the page on a virtual clock that only moves when
 // this script ticks it, and every 1/60 s is screenshotted: a constant 60fps however busy the
@@ -21,6 +22,8 @@
 import { spawn, execSync } from "node:child_process";
 import { existsSync, mkdirSync, mkdtempSync, readFileSync, rmSync, writeFileSync } from "node:fs";
 import { tmpdir, homedir } from "node:os";
+import { dirname } from "node:path";
+import { fileURLToPath } from "node:url";
 import { join } from "node:path";
 
 const CHROME = process.env.CHROME_BIN
@@ -147,13 +150,13 @@ async function launch() {
   return { close: async () => { proc.kill(); await sleep(500); rmSync(profile, { recursive: true, force: true }); } };
 }
 
-async function openPage(hash, { theme = "light", cursor = true, still = false, virtual = true } = {}) {
+async function openPage(hash, { theme = "light", cursor = true, still = false, virtual = true, view = VIEW } = {}) {
   const target = await fetch(`http://localhost:${PORT}/json/new?about:blank`, { method: "PUT" }).then((r) => r.json());
   const c = connect(target.webSocketDebuggerUrl);
   await c.ready;
   await c.send("Page.enable");
   await c.send("Runtime.enable");
-  await c.send("Emulation.setDeviceMetricsOverride", { width: VIEW.w, height: VIEW.h, deviceScaleFactor: 1, mobile: false });
+  await c.send("Emulation.setDeviceMetricsOverride", { width: view.w, height: view.h, deviceScaleFactor: 1, mobile: false });
   await c.send("Emulation.setFocusEmulationEnabled", { enabled: true });
   // stills hold every piece at rest (the chair's idle rock, the pendulum)
   if (still) await c.send("Emulation.setEmulatedMedia", { features: [{ name: "prefers-reduced-motion", value: "reduce" }] });
@@ -424,13 +427,24 @@ async function renderStills() {
   }
 }
 
+// The link preview (og:image): the lamp lit, at the card size the networks use, 1200×630 at 2×.
+async function renderPreview() {
+  const view = { w: 1200, h: 630 };
+  const page = await openPage("lamp", { theme: "dark", cursor: false, still: true, view });
+  const shot = await page.c.send("Page.captureScreenshot", { format: "png", clip: { x: 0, y: 0, width: view.w, height: view.h, scale: 2 } });
+  page.close();
+  const file = join(dirname(fileURLToPath(import.meta.url)), "..", "preview.png");
+  writeFileSync(file, Buffer.from(shot.data, "base64"));
+  console.log(`→ ${file}`);
+}
+
 if (!(await reachable(`${SERVER}/`))) { console.error(`nothing at ${SERVER}: run python3 serve.py first`); process.exit(1); }
 const wanted = process.argv.slice(2).length ? process.argv.slice(2) : [...Object.keys(TAKES), "stills"];
-for (const w of wanted) if (w !== "stills" && !TAKES[w]) { console.error(`unknown take ${w}; have ${Object.keys(TAKES).join(", ")}, stills`); process.exit(1); }
+for (const w of wanted) if (w !== "stills" && w !== "preview" && !TAKES[w]) { console.error(`unknown take ${w}; have ${Object.keys(TAKES).join(", ")}, stills, preview`); process.exit(1); }
 mkdirSync(OUT, { recursive: true });
 const chrome = await launch();
 try {
-  for (const w of wanted) await (w === "stills" ? renderStills() : renderTake(w));
+  for (const w of wanted) await (w === "stills" ? renderStills() : w === "preview" ? renderPreview() : renderTake(w));
 } finally {
   await chrome.close();
 }

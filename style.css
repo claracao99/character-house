@@ -34,6 +34,8 @@ html, body {
   z-index: 1;
   display: flex;
   justify-content: space-between;
+  align-items: center;
+  font-size: 18px;
   pointer-events: none;
 }
 
@@ -47,8 +49,8 @@ html, body {
 .sound {
   pointer-events: auto;
   position: relative;
-  width: 17px;
-  height: 17px;
+  width: 22px;
+  height: 22px;
   margin: 0;
   padding: 0;
   border: 0;

@@ -46,7 +46,7 @@ let index = -1, piece = null;
 // opaque box, BOUNDS, which sits anywhere in the frame) is centred in that space, so every
 // piece looks balanced over its entry rather than wherever its frame puts it. A piece can
 // name its own horizontal centre instead (CENTRE_X: the pram's is between its wheels).
-const NAV_CLEAR = 64; // px kept at the top for the nav
+const NAV_CLEAR = 72; // px kept at the top for the nav
 const ENTRY_GAP = 32; // px between the piece and its entry
 const fit = () => {
   if (!piece) return;

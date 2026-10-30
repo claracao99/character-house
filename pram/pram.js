@@ -28,6 +28,8 @@ const FLOOR = AXLES[0].y + WHEEL_RADIUS;
 // wheels included (the page centres it).
 const FOOT = { x: 1172, y: FLOOR };
 export const BOUNDS = { x0: 313, y0: 399, x1: AXLES[1].x + WHEEL / 2, y1: FLOOR };
+// ...but it's centred on its wheels, not its box (the handle would push them off to one side)
+export const CENTRE_X = FOOT.x;
 
 // --- Tuning ------------------------------------------------------------------------------
 

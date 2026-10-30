@@ -44,16 +44,19 @@ let index = -1, piece = null;
 
 // The piece's frame fits the space between the nav and the entry, and the art itself (its
 // opaque box, BOUNDS, which sits anywhere in the frame) is centred in that space, so every
-// piece looks balanced over its entry rather than wherever its frame puts it.
+// piece looks balanced over its entry rather than wherever its frame puts it. A piece can
+// name its own horizontal centre instead (CENTRE_X: the pram's is between its wheels).
 const NAV_CLEAR = 64; // px kept at the top for the nav
 const ENTRY_GAP = 32; // px between the piece and its entry
 const fit = () => {
   if (!piece) return;
   const S = piece.STAGE;
-  const b = PIECES[index].module.BOUNDS ?? { x0: 0, y0: 0, x1: S, y1: S };
+  const m = PIECES[index].module;
+  const b = m.BOUNDS ?? { x0: 0, y0: 0, x1: S, y1: S };
+  const cx = m.CENTRE_X ?? (b.x0 + b.x1) / 2;
   const top = NAV_CLEAR, bottom = entry.getBoundingClientRect().top - ENTRY_GAP;
   const scale = Math.min(innerWidth, bottom - top) / S;
-  const x = innerWidth / 2 - (scale * (b.x0 + b.x1)) / 2;
+  const x = innerWidth / 2 - scale * cx;
   const y = (top + bottom) / 2 - (scale * (b.y0 + b.y1)) / 2;
   stage.style.transform = `translate(${x}px, ${y}px) scale(${scale})`;
 };

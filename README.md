@@ -8,6 +8,10 @@ One page (`index.html`, `house.js`, `style.css`): one piece at a time, full scre
 live, on its own background colour, with ← → to turn the page. `#lamp`, `#curtain`,
 `#chair`, `#clock`, `#pram` open a piece; each piece folder's `index.html` redirects there.
 
+Under each piece is its dictionary entry: the pinyin, the character in a calligraphy
+practice square (米字格, coral), and the English meaning. The piece's art (its `BOUNDS`) is
+centred in the space between the nav and the entry, so it sits balanced over it.
+
 The lamp's cord switches the theme for the whole house (dark = lamp on): each piece's
 background turns to a night version of its colour, and the deep-blue characters turn light
 blue. The theme persists in localStorage (`character-house-theme`).
@@ -20,7 +24,8 @@ Pieces:
   `<piece>.css`), returning `{ STAGE, toStage, hit, down, move, up, leave,
   step, destroy }`, which `house.js` mounts. The lamp file also keeps the floor
   lamp (`FLOOR_LAMP`) from the old room page, unused.
-- Add a new piece to `PIECES` in `house.js`, with a `bg` and a `night` colour.
+- Add a new piece to `PIECES` in `house.js`, with its `pinyin`, a `bg` and a `night`
+  colour, and export the art's opaque box as `BOUNDS` so it can be centred.
 
 Sound: `sound.js`, synthesised with Web Audio (no files), every pitch in D
 major; on by default, muted with `localStorage.sound = "off"` (the speaker in

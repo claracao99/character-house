@@ -10,12 +10,12 @@ html, body {
   font: 500 14px/1.4 system-ui, -apple-system, sans-serif;
 }
 
-/* The piece's design frame (1254² or 2048²), scaled to fit the viewport by house.js.
+/* The piece's design frame (1254² or 2048²), placed and scaled by house.js.
    Fixed, so the unscaled frame can't widen the layout viewport on phones. */
 .stage {
   position: fixed;
-  left: 50%;
-  top: 50%;
+  left: 0;
+  top: 0;
   transform-origin: 0 0;
   touch-action: none;
   user-select: none;
@@ -78,33 +78,34 @@ html, body {
 .sound[aria-pressed="true"] .off { display: block; }
 .sound:focus-visible { outline: 2px solid currentColor; outline-offset: 4px; border-radius: 3px; }
 
-/* the character and its meaning, small, bottom centre */
+/* the dictionary entry, bottom centre: the reading, the character in a calligraphy practice
+   square, its meaning */
 .entry {
   position: fixed;
   left: 0;
   right: 0;
   bottom: calc(24px + env(safe-area-inset-bottom));
   z-index: 1;
-  text-align: center;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 6px;
+  font-size: 15px;
   pointer-events: none;
 }
 
-.entry .glyph {
-  font-family: "PingFang SC", "Hiragino Sans GB", "Noto Sans SC", "Microsoft YaHei", sans-serif;
-  font-size: 16px;
-}
+.entry .pinyin { font-style: italic; }
 
-/* --- Entry layouts to compare (?entry=1–4); one will stay ------------------------------- */
-
-/* the character sits in a calligraphy practice square (米字格): a solid frame, a dashed
-   cross and dashed diagonals, in the coral of red-ruled paper */
+/* the square (米字格): a solid frame, a dashed cross and dashed diagonals, in the coral of
+   red-ruled paper */
 .entry .glyph {
   position: relative;
-  display: inline-grid;
+  display: grid;
   place-items: center;
-  width: 1.5em;
-  height: 1.5em;
-  vertical-align: middle;
+  width: 84px;
+  height: 84px;
+  font-family: "PingFang SC", "Hiragino Sans GB", "Noto Sans SC", "Microsoft YaHei", sans-serif;
+  font-size: 56px;
   line-height: 1;
 }
 .entry .grid {
@@ -119,48 +120,6 @@ html, body {
 .entry .grid .frame { stroke-width: 1.5px; vector-effect: non-scaling-stroke; }
 .entry .grid .lines { stroke-width: 1px; stroke-dasharray: 3 3; vector-effect: non-scaling-stroke; opacity: 0.8; }
 .entry .hanzi { position: relative; }
-
-.entry .pinyin { font-style: italic; }
-.entry .pos { font-style: italic; opacity: 0.6; }
-.entry .strokes { display: none; opacity: 0.6; }
-
-/* 1. one line, bottom centre: 灯 dēng n. Lamp */
-[data-entry="1"] .entry .glyph { font-size: 18px; margin-right: 2px; }
-
-/* 2. stacked, bottom centre: pinyin over the character, the meaning under it */
-[data-entry="2"] .entry {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: 2px;
-}
-[data-entry="2"] .entry .pinyin { order: 1; font-size: 13px; }
-[data-entry="2"] .entry .glyph { order: 2; font-size: 40px; margin: 4px 0; }
-[data-entry="2"] .entry .pos { display: none; }
-[data-entry="2"] .entry .meaning { order: 3; }
-
-/* 3. headword, bottom left: a big character, its reading and meaning beside it */
-[data-entry="3"] .entry {
-  left: 24px;
-  right: auto;
-  display: grid;
-  grid-template-columns: auto auto;
-  grid-template-rows: auto auto;
-  column-gap: 14px;
-  align-items: end;
-  text-align: left;
-}
-[data-entry="3"] .entry .glyph { grid-row: 1 / 3; font-size: 56px; }
-[data-entry="3"] .entry .pinyin { grid-column: 2; font-size: 18px; align-self: end; }
-[data-entry="3"] .entry .pos, [data-entry="3"] .entry .meaning { grid-column: 2; grid-row: 2; }
-[data-entry="3"] .entry .pos { display: none; }
-
-/* 4. a dictionary line, bottom centre: 灯 [dēng] n. Lamp · 6 strokes */
-[data-entry="4"] .entry .pinyin { font-style: normal; }
-[data-entry="4"] .entry .pinyin::before { content: "["; }
-[data-entry="4"] .entry .pinyin::after { content: "]"; }
-[data-entry="4"] .entry .strokes { display: inline; }
-[data-entry="4"] .entry .strokes::before { content: "· "; }
 
 /* previous / next, at the middle of each side; the hit area is bigger than the arrow */
 .turn {

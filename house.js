@@ -27,31 +27,35 @@ const toggleTheme = () => {
 // In order. The English word is the character's meaning; `bg` is the piece's own colour,
 // complementary to it, picked by eye, and `night` the same hue in the dark.
 const PIECES = [
-  { key: "lamp", module: lamp, glyph: "灯", pinyin: "dēng", strokes: 6, meaning: "Lamp", bg: "#c8c0f0", night: "#1d1934",
+  { key: "lamp", module: lamp, glyph: "灯", pinyin: "dēng", meaning: "Lamp", bg: "#c8c0f0", night: "#1d1934",
     mount: (el) => lamp.mount(el, lamp.TABLE_LAMP, { onToggle: toggleTheme }) },
-  { key: "curtain", module: curtain, glyph: "帘", pinyin: "lián", strokes: 8, meaning: "Curtain", bg: "#a9dcc6", night: "#193428" },
-  { key: "chair", module: chair, glyph: "椅", pinyin: "yǐ", strokes: 12, meaning: "Chair", bg: "#9cd6dc", night: "#193134" },
-  { key: "clock", module: clock, glyph: "钟", pinyin: "zhōng", strokes: 9, meaning: "Clock", bg: "#f6dc8c", night: "#342d19" },
-  { key: "pram", module: pram, glyph: "轮", pinyin: "lún", strokes: 8, meaning: "Wheel", bg: "#b4d2f0", night: "#192634" },
+  { key: "curtain", module: curtain, glyph: "帘", pinyin: "lián", meaning: "Curtain", bg: "#a9dcc6", night: "#193428" },
+  { key: "chair", module: chair, glyph: "椅", pinyin: "yǐ", meaning: "Chair", bg: "#9cd6dc", night: "#193134" },
+  { key: "clock", module: clock, glyph: "钟", pinyin: "zhōng", meaning: "Clock", bg: "#f6dc8c", night: "#342d19" },
+  { key: "pram", module: pram, glyph: "轮", pinyin: "lún", meaning: "Wheel", bg: "#b4d2f0", night: "#192634" },
 ];
 
 // --- DOM ---------------------------------------------------------------------------------
 
 const stage = document.getElementById("stage");
 const entry = document.getElementById("entry");
-// Layout options for the entry, to compare (?entry=1–4); one will stay.
-document.documentElement.dataset.entry = new URLSearchParams(location.search).get("entry") ?? "1";
 
 let index = -1, piece = null;
 
-// The piece is centred and kept clear of the entry below it (and as far from the nav above):
-// whatever height the entry has, plus its 24px off the bottom and a little air.
-const ROOM_MIN = 96;
+// The piece's frame fits the space between the nav and the entry, and the art itself (its
+// opaque box, BOUNDS, which sits anywhere in the frame) is centred in that space, so every
+// piece looks balanced over its entry rather than wherever its frame puts it.
+const NAV_CLEAR = 64; // px kept at the top for the nav
+const ENTRY_GAP = 32; // px between the piece and its entry
 const fit = () => {
   if (!piece) return;
-  const room = Math.max(ROOM_MIN, 2 * (24 + entry.offsetHeight + 8));
-  const scale = Math.min(innerWidth, innerHeight - room) / piece.STAGE;
-  stage.style.transform = `scale(${scale}) translate(-50%, -50%)`;
+  const S = piece.STAGE;
+  const b = PIECES[index].module.BOUNDS ?? { x0: 0, y0: 0, x1: S, y1: S };
+  const top = NAV_CLEAR, bottom = entry.getBoundingClientRect().top - ENTRY_GAP;
+  const scale = Math.min(innerWidth, bottom - top) / S;
+  const x = innerWidth / 2 - (scale * (b.x0 + b.x1)) / 2;
+  const y = (top + bottom) / 2 - (scale * (b.y0 + b.y1)) / 2;
+  stage.style.transform = `translate(${x}px, ${y}px) scale(${scale})`;
 };
 addEventListener("resize", fit);
 
@@ -66,7 +70,7 @@ const show = (i) => {
   i = (i + PIECES.length) % PIECES.length;
   if (i === index) return;
   index = i;
-  const { key, module: m, glyph, pinyin, strokes, meaning } = PIECES[i];
+  const { key, module: m, glyph, pinyin, meaning } = PIECES[i];
   piece?.destroy();
   stage.className = "stage";
   stage.style.width = stage.style.height = `${m.STAGE}px`;
@@ -75,7 +79,6 @@ const show = (i) => {
   entry.querySelector(".hanzi").textContent = glyph;
   entry.querySelector(".pinyin").textContent = pinyin;
   entry.querySelector(".meaning").textContent = meaning;
-  entry.querySelector(".strokes").textContent = `${strokes} strokes`;
   fit(); // after the entry, which it's measured against
   document.title = `${glyph} ${meaning} · Character House`;
   history.replaceState(null, "", `#${key}`);

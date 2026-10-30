@@ -33,8 +33,19 @@ the nav).
 Serve the whole house: `python3 serve.py` (port 5180, no caching), then open
 http://localhost:5180.
 
-The table lamp is also ported into the portfolio (`portfolio/src/lib/lamp.ts`)
-as the dark-mode switch.
+Live at https://characterhouse.claracao.work (GitHub Pages from `main`, the `CNAME` file;
+a push deploys in a minute or two). The link preview is the `og:`/`twitter:` tags in
+`index.html` and `preview.png`.
+
+The portfolio's Play tile for the house is the floor lamp, live: its cord sways under the
+pointer and a click opens this site (`laptop-scroll/play-lamp.js`, from this repo's `lamp.js`
+before the floor lamp was dropped; copied into `portfolio/public/`).
+
+Clips and stills for sharing: `node scripts/render-videos.mjs [lamp curtain pram stills
+preview]` with `serve.py` running, into `~/Downloads/character-house-social/` (`preview`
+rewrites `preview.png`). It renders on a virtual clock instead of filming: a frame per
+1/60 s, macOS's own hand cursors drawn in, and the page's sound log replayed offline from
+`sound.js`'s recipes.
 
 Conventions for new pieces:
 

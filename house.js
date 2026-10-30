@@ -80,7 +80,7 @@ const show = (i) => {
   entry.querySelector(".pinyin").textContent = pinyin;
   entry.querySelector(".meaning").textContent = meaning;
   fit(); // after the entry, which it's measured against
-  document.title = `${glyph} ${meaning} · Character House`;
+  document.title = `${glyph} ${meaning}`;
   history.replaceState(null, "", `#${key}`);
 };
 

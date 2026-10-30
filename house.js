@@ -108,6 +108,14 @@ addEventListener("keydown", (e) => {
 });
 addEventListener("hashchange", () => show(fromHash()));
 
+// On a desktop the turn strips are as wide as the name reaches in from the edge (style.css).
+const nameEl = document.querySelector(".nav a");
+const measureTurns = () =>
+  document.documentElement.style.setProperty("--turn-w", `${Math.round(nameEl.getBoundingClientRect().right)}px`);
+measureTurns();
+addEventListener("resize", measureTurns);
+document.fonts?.ready.then(measureTurns);
+
 // --- Sound -------------------------------------------------------------------------------
 
 // On by default, silent until the first gesture. The speaker in the nav mutes it

@@ -143,6 +143,9 @@ html, body {
 
 .turn.prev { left: 0; }
 .turn.next { right: 0; }
+/* on a desktop each strip is as wide as the name reaches in from the edge (house.js measures
+   it into --turn-w), so the strips line up with "Character House" */
+@media (min-width: 768px) { .turn { width: var(--turn-w, 163px); } }
 .turn svg { width: 28px; height: 28px; fill: currentColor; transition: transform 0.2s ease; }
 .turn:focus-visible { outline: 2px solid currentColor; outline-offset: -6px; }
 

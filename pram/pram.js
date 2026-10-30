@@ -48,6 +48,7 @@ const QUARTER_TURN = Math.PI / 2; // the wheels tick once a quarter turn
 const RUMBLE_SPEED = 120; // px/s: slower than this rolls silently
 const RUMBLE_FULL = 1600; // px/s: full rumble
 const HIT_PAD = 10; // extra px around the wheels that still grabs
+const BODY_PAD = 30; // ...and around the body, so the thin handle and struts are easy to take
 
 // Alpha of an image as one byte per design pixel, for grabbing a piece by its silhouette.
 const readAlpha = (img, size, done) =>
@@ -206,7 +207,7 @@ export function mount(stage) {
     const q = { x: p.x - cart.x, y: p.y };
     const reach = WHEEL / 2 + HIT_PAD + pad;
     const onWheel = AXLES.some((a) => Math.hypot(q.x - a.x, q.y - a.y) < reach);
-    return onWheel || opaque(mask, STAGE, q, pad / 2);
+    return onWheel || opaque(mask, STAGE, q, BODY_PAD + pad / 2);
   };
   const hit = (p, pad = 0) => (onPram(p, pad) ? "body" : null);
 

@@ -92,13 +92,22 @@ const fromHash = () => Math.max(0, PIECES.findIndex((p) => `#${p.key}` === locat
 
 // --- Input -------------------------------------------------------------------------------
 
-stage.addEventListener("pointerdown", (e) => {
+// The piece listens to the whole page, not just its stage's box: a piece can leave its frame
+// (the pram rolls out to the screen's edges) and must stay as easy to take hold of there.
+// The nav and the turn strips keep their own clicks.
+const onChrome = (e) => !!e.target.closest?.(".nav, .turn");
+const held = (e) => stage.hasPointerCapture(e.pointerId);
+addEventListener("pointerdown", (e) => {
+  if (onChrome(e)) return;
   if (piece.down(piece.toStage(e), e)) stage.setPointerCapture(e.pointerId);
 });
-stage.addEventListener("pointermove", (e) => piece.move(piece.toStage(e), e));
-stage.addEventListener("pointerup", (e) => piece.up(e));
-stage.addEventListener("pointercancel", (e) => piece.up(e));
-stage.addEventListener("pointerleave", () => piece.leave());
+addEventListener("pointermove", (e) => {
+  if (onChrome(e) && !held(e)) piece.leave(); // over a strip, as if the pointer had left
+  else piece.move(piece.toStage(e), e);
+});
+addEventListener("pointerup", (e) => piece.up(e));
+addEventListener("pointercancel", (e) => piece.up(e));
+document.documentElement.addEventListener("pointerleave", () => piece.leave());
 
 document.getElementById("prev").addEventListener("click", () => show(index - 1));
 document.getElementById("next").addEventListener("click", () => show(index + 1));
@@ -108,10 +117,11 @@ addEventListener("keydown", (e) => {
 });
 addEventListener("hashchange", () => show(fromHash()));
 
-// On a desktop the turn strips are as wide as the name reaches in from the edge (style.css).
+// On a desktop the turn strips reach in past the end of the name (style.css).
 const nameEl = document.querySelector(".nav a");
-const measureTurns = () =>
-  document.documentElement.style.setProperty("--turn-w", `${Math.round(nameEl.getBoundingClientRect().right)}px`);
+const NAME_GAP = 24; // px past the end of the name, as far as the name sits from the edge
+const measureTurns = () => document.documentElement.style.setProperty(
+  "--turn-w", `${Math.round(nameEl.getBoundingClientRect().right + NAME_GAP)}px`);
 measureTurns();
 addEventListener("resize", measureTurns);
 document.fonts?.ready.then(measureTurns);

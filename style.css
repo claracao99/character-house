@@ -5,6 +5,7 @@
 html, body {
   height: 100%;
   overflow: hidden;
+  touch-action: none; /* a drag anywhere moves the piece (house.js), never the page */
   background: var(--bg, #c8c0f0);
   color: #4565ad;
   font: 500 14px/1.4 system-ui, -apple-system, sans-serif;
@@ -22,8 +23,9 @@ html, body {
   -webkit-user-select: none;
 }
 
-.stage.can-grab { cursor: grab; }
-.stage.grabbing { cursor: grabbing; }
+/* the piece can be taken anywhere on the page (house.js), so the cursor follows the page */
+:root:has(.stage.can-grab) body { cursor: grab; }
+:root:has(.stage.grabbing) body { cursor: grabbing; }
 
 /* Quiet: the name, and the speaker that mutes the sound */
 .nav {
@@ -143,9 +145,9 @@ html, body {
 
 .turn.prev { left: 0; }
 .turn.next { right: 0; }
-/* on a desktop each strip is as wide as the name reaches in from the edge (house.js measures
-   it into --turn-w), so the strips line up with "Character House" */
-@media (min-width: 768px) { .turn { width: var(--turn-w, 163px); } }
+/* on a desktop each strip reaches in past the end of "Character House", with the same 24px
+   gap the name keeps from the edge (house.js measures it into --turn-w) */
+@media (min-width: 768px) { .turn { width: var(--turn-w, 187px); } }
 .turn svg { width: 28px; height: 28px; fill: currentColor; transition: transform 0.2s ease; }
 .turn:focus-visible { outline: 2px solid currentColor; outline-offset: -6px; }
 

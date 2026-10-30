@@ -24,8 +24,9 @@ const WHEEL = 240; // the wheel's character, centred on its axle, in front of th
 const WHEEL_RADIUS = WHEEL * 0.45; // from the axle to the glyph's bottom edge: rolls on the floor
 const FLOOR = AXLES[0].y + WHEEL_RADIUS;
 
-// Where the wheels meet the floor, and the opaque box of the art, wheels included.
-export const FOOT = { x: 1172, y: FLOOR };
+// Where the wheels meet the floor (the body sways about it), and the opaque box of the art,
+// wheels included (the page centres it).
+const FOOT = { x: 1172, y: FLOOR };
 export const BOUNDS = { x0: 313, y0: 399, x1: AXLES[1].x + WHEEL / 2, y1: FLOOR };
 
 // --- Tuning ------------------------------------------------------------------------------

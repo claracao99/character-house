@@ -1,5 +1,5 @@
-/* The lamp's own parts, scoped so several pieces can share one page (the room).
-   mount() adds .piece-lamp to the stage it draws into (1254² table lamp, 2048² floor lamp),
+/* The lamp's own parts, scoped to its stage.
+   mount() adds .piece-lamp to the stage it draws into (1254²),
    and sets --seg when the cord's characters aren't 40px. */
 
 .piece-lamp .lamp {
@@ -36,7 +36,7 @@
   will-change: transform;
 }
 
-/* warm light under the shade while the lamp is on (the room turns it on in dark mode) */
+/* warm light under the shade while the lamp is on (the page shows it in dark mode) */
 .piece-lamp .glow {
   position: absolute;
   pointer-events: none;

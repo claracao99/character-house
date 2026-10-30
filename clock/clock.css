@@ -1,4 +1,4 @@
-/* The clock's own parts, scoped so several pieces can share one page (the room).
+/* The clock's own parts, scoped to its stage.
    mount() adds .piece-clock to the 2048 × 2048 stage it draws into. */
 
 /* Everything drawn on the clock is coral, so it reads against the light-blue case (also in

@@ -7,8 +7,8 @@
 // mass, heavy damping, and a soft stop at each end of the rocker. All units are design-frame
 // pixels (2048²); positive angles tip the chair forward (clockwise on screen).
 //
-// mount(stage) draws one chair into a 2048² element and returns its controls; the page (or
-// the room) owns the pointer listeners and the animation loop. See main.js.
+// mount(stage) draws one chair into a 2048² element and returns its controls; the page owns
+// the pointer listeners and the animation loop (see house.js).
 
 import { playSound } from "../sound.js";
 
@@ -36,9 +36,8 @@ const ROCKER_FILL = 0.45; // how much of each 64² cell is ink, for the rocker's
 const FLOOR = 1700; // invisible floor the rocker rolls on
 const REST_X = 1070; // where the centre of mass sits at rest
 
-// Where the rocker meets the floor, and the art's box for placing it in a room: its height as
-// it rests (top of the back at 361, measured), wide enough for the rock's sweep.
-export const FOOT = { x: 1024, y: FLOOR };
+// The art's opaque box (the page centres it): its height as it rests (top of the back at
+// 361, measured), wide enough for the rock's sweep.
 export const BOUNDS = { x0: 330, y0: 361, x1: 1640, y1: FLOOR };
 
 const STEP = 1 / 120;

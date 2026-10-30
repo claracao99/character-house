@@ -5,8 +5,8 @@
 // moving through them: strands part around it, brush their neighbours, then sway back and
 // settle. Characters can also be grabbed and dragged. All units are design-frame pixels (2048²).
 //
-// mount(stage) draws one curtain into a 2048² element and returns its controls; the page (or
-// the room) owns the pointer listeners and the animation loop. See main.js.
+// mount(stage) draws one curtain into a 2048² element and returns its controls; the page owns
+// the pointer listeners and the animation loop (see house.js).
 
 import { playSound, BEAD_PITCHES } from "../sound.js";
 
@@ -26,8 +26,7 @@ const RINGS = [640, 745, 844, 937, 1027, 1114, 1204, 1300, 1407];
 const STRANDS = RINGS.length;
 const LENGTH = 18; // characters per strand; ends around knee height (feet at 1757)
 
-// Where the feet meet the floor, and the opaque box of the art.
-export const FOOT = { x: 1024, y: 1757 };
+// The opaque box of the art (the page centres it).
 export const BOUNDS = { x0: 411, y0: 250, x1: 1637, y1: 1757 };
 
 // --- Tuning ------------------------------------------------------------------------------

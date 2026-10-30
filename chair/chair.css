@@ -1,4 +1,4 @@
-/* The chair's own parts, scoped so several pieces can share one page (the room).
+/* The chair's own parts, scoped to its stage.
    mount() adds .piece-chair to the 2048 × 2048 stage it draws into. */
 
 /* Chair image + rocker characters: one rigid body, rotated and rolled by chair.js */

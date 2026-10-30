@@ -22,8 +22,7 @@ Pieces:
   `pram/`), plain HTML/JS, no build.
 - Each piece lives in `<piece>/<piece>.js` as `mount(stage)` (scoped styles in
   `<piece>.css`), returning `{ STAGE, toStage, hit, down, move, up, leave,
-  step, destroy }`, which `house.js` mounts. The lamp file also keeps the floor
-  lamp (`FLOOR_LAMP`) from the old room page, unused.
+  step, destroy }`, which `house.js` mounts.
 - Add a new piece to `PIECES` in `house.js`, with its `pinyin`, a `bg` and a `night`
   colour, and export the art's opaque box as `BOUNDS` so it can be centred.
 

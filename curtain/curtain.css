@@ -1,4 +1,4 @@
-/* The curtain's own parts, scoped so several pieces can share one page (the room).
+/* The curtain's own parts, scoped to its stage.
    mount() adds .piece-curtain to the 2048 × 2048 stage it draws into. */
 
 /* The frame sits on top so the top character of each strand tucks behind the rod */

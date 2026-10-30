@@ -3,17 +3,15 @@
 // The cord exits a hole in the shade. Above the hole it runs on a spring-loaded slider
 // (like a real pull switch), so pulling draws spare characters out of the lamp and letting
 // go snaps them back. Below the hole the characters hang as a chain of slightly elastic
-// links that swing, stretch and bounce. All units are design-frame pixels (1254² for the
-// table lamp, 2048² for the floor lamp).
+// links that swing, stretch and bounce. All units are design-frame pixels (1254²).
 //
 // mount(stage, lamp, { onToggle }) draws one lamp into an element of its STAGE size and
-// returns its controls; the page (or the room) owns the pointer listeners and the animation
-// loop. See main.js. With onToggle the cord is also a pull switch (as in the portfolio's
+// returns its controls; the page owns the pointer listeners and the animation loop (see
+// house.js). With onToggle the cord is also a pull switch (as in the portfolio's
 // lamp): pulling the slider past TOGGLE_AT clicks it, and a warm glow can show under the shade.
 
-// Two lamps share this file: the table lamp (its own page, and the portfolio's original) and
-// a floor lamp for the room. Same cord, same feel; each has its own art and measurements.
-// Length tuning below is written for the table lamp's 40px characters and scales with SEG.
+// The lamp is the table lamp (the portfolio's original); its art and measurements are
+// TABLE_LAMP. Length tuning below is written for its 40px characters and scales with SEG.
 
 const CHAR = "灯";
 
@@ -56,8 +54,7 @@ const SWITCH_DRAG_PX = 10; // screen px: a finger's wobble on a small lamp mustn
 // --- Lamps, measured from each image's alpha ---------------------------------------------
 
 // SHADE is [x, shade top, shade bottom]; STEM and BASE are what the cord can't pass through.
-// FOOT is where the lamp meets the floor and BOUNDS the opaque box of the art (for placing it
-// in a room).
+// BOUNDS is the opaque box of the art (the page centres it).
 export const TABLE_LAMP = {
   STAGE: 1254,
   IMAGE: new URL("assets/lamp.png", import.meta.url).href,
@@ -75,35 +72,10 @@ export const TABLE_LAMP = {
   ],
   STEM: { x0: 608, x1: 645, y0: 540, y1: 900 },
   BASE: { cx: 626, cy: 921, rx: 184, ry: 51 },
-  FOOT: { x: 626, y: 972 },
   BOUNDS: { x0: 339, y0: 276, x1: 914, y1: 972 },
 };
 
-// Tall and thin: a smaller shade on a long pole, with a cord of slightly bigger characters so
-// it still reads when the lamp stands across a room. The hole sits as far out along the
-// shade, and as far under its rim, as the table lamp's.
-export const FLOOR_LAMP = {
-  STAGE: 2048,
-  IMAGE: new URL("assets/floor-lamp.png", import.meta.url).href,
-  ALT: "Yellow floor lamp",
-  HOLE: { x: 1137, y: 434 },
-  SEG: 48,
-  FREE: 5,
-  SPARE: 5,
-  SHADE: [
-    [820, 386, 403], [845, 316, 412], [870, 290, 415], [895, 271, 418], [920, 257, 420],
-    [945, 247, 421], [970, 244, 422], [995, 241, 422], [1020, 228, 424], [1045, 234, 422],
-    [1070, 244, 421], [1095, 247, 420], [1120, 256, 418], [1145, 268, 416], [1170, 284, 414],
-    [1195, 314, 411], [1220, 363, 406], [1226, 394, 404],
-  ],
-  STEM: { x0: 1009, x1: 1038, y0: 422, y1: 1775 },
-  BASE: { cx: 1024.5, cy: 1818, rx: 144, ry: 48 },
-  FOOT: { x: 1024.5, y: 1865 },
-  BOUNDS: { x0: 818, y0: 228, x1: 1227, y1: 1865 },
-};
-
-// The table lamp is this module's default, so its own page reads as before.
-export const { STAGE, FOOT, BOUNDS } = TABLE_LAMP;
+export const { STAGE, BOUNDS } = TABLE_LAMP;
 
 // Alpha of an image as one byte per design pixel, for grabbing a piece by its silhouette.
 const readAlpha = (img, size, done) =>

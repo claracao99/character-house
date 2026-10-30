@@ -7,8 +7,8 @@
 // forever; drag it to swing it. The clock image sits on top; the face and pendulum only show
 // through its holes. All units are design-frame pixels (2048²).
 //
-// mount(stage) draws one clock into a 2048² element and returns its controls; the page (or
-// the room) owns the pointer listeners and the animation loop. See main.js.
+// mount(stage) draws one clock into a 2048² element and returns its controls; the page owns
+// the pointer listeners and the animation loop (see house.js).
 
 import { playSound } from "../sound.js";
 
@@ -21,8 +21,7 @@ const CHAR = "钟";
 const FACE = { x: 1023.6, y: 451.6, r: 146 };
 const WINDOW = { x0: 932, x1: 1115, y0: 775, y1: 1531 }; // arched top, radius ~92
 
-// Where the feet meet the floor, and the opaque box of the art (for placing it in a room).
-export const FOOT = { x: 1023.5, y: 1953 };
+// The opaque box of the art (the page centres it).
 export const BOUNDS = { x0: 781, y0: 92, x1: 1266, y1: 1953 };
 
 // --- Tuning ------------------------------------------------------------------------------

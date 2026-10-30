@@ -52,7 +52,7 @@ export const SOUNDS = {
   ], { gap: 0.05 }),
 };
 
-const VOLUME = 0.35;
+export const VOLUME = 0.35;
 const MIN_GAP = 0.04; // s: the same sound can't retrigger faster than this
 const SILENT = 0.0001;
 const STORE = "sound";
@@ -119,15 +119,16 @@ export function unlockOnGesture() {
 }
 
 // Debug hook for tests, off unless a page sets window.__sounds = [].
-const log = (name, gain) => window.__sounds?.push({
-  name, gain: +gain.toFixed(2), t: +(performance.now() / 1000).toFixed(3),
+// Each entry is enough to play the sound again offline (scripts/render-videos.mjs does).
+const log = (name, gain, pitch = 1) => window.__sounds?.push({
+  name, gain: +gain.toFixed(3), pitch, t: +(performance.now() / 1000).toFixed(4),
 });
 
 // A continuous sound that follows a level instead of playing once: the pram's rolling rumble
 // (low filtered noise). `set(level)` takes 0–1 and glides there; 0 is silent.
-const RUMBLE = { freq: 480, q: 0.8, gain: 0.14 }; // high enough for laptop speakers to play
+export const RUMBLE = { freq: 480, q: 0.8, gain: 0.14 }; // high enough for laptop speakers to play
 export function rumble() {
-  let source = null, level = null, on = false;
+  let source = null, level = null, logged = 0;
   const start = () => {
     source = new AudioBufferSourceNode(ctx, { buffer: noiseBuffer, loop: true });
     level = new GainNode(ctx, { gain: 0 });
@@ -138,8 +139,9 @@ export function rumble() {
   return {
     set(x) {
       const playing = x > 0.001 && soundEnabled();
-      if (playing && !on) log("rumble", x);
-      on = playing;
+      // the level as it changes (for the debug log): enough to redraw the rumble offline
+      const now = playing ? x : 0;
+      if (Math.abs(now - logged) > 0.01 || (now === 0) !== (logged === 0)) { log("rumble", now); logged = now; }
       if (!ctx || ctx.state !== "running") return;
       if (!source) start();
       level.gain.setTargetAtTime(playing ? x * RUMBLE.gain : 0, ctx.currentTime, 0.06);
@@ -159,7 +161,7 @@ export function playSound(name, { gain = 1, pitch = 1 } = {}) {
   const t = performance.now() / 1000;
   if (t - (lastPlayed.get(name) ?? -1) < (recipe.gap ?? MIN_GAP)) return;
   lastPlayed.set(name, t);
-  log(name, gain);
+  log(name, gain, pitch);
   if (!ctx || ctx.state !== "running") return;
   const now = ctx.currentTime;
   for (const layer of recipe) playLayer(layer, now + (layer.delay ?? 0), gain, pitch);

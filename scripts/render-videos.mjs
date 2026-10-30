@@ -10,16 +10,16 @@
 // this script ticks it, and every 1/60 s is screenshotted: a constant 60fps however busy the
 // machine is, nothing from the desktop in frame, the same take every render.
 //
-// The cursor is drawn into the page (a real one isn't in a screenshot). It follows the
+// The cursor is drawn into the page (a real one isn't in a screenshot): macOS's own hand
+// cursors and a matching arrow, taking the page's cursor wherever it is. It follows the
 // scripted mouse, which moves like a hand: eased, slightly curved paths with a little tremor
-// and small corrections, and it takes the page's own cursor (arrow, pointing hand, open hand,
-// closed hand) wherever it is.
+// and small corrections.
 //
 // Sound: the page logs every sound it plays (sound.js, window.__sounds) with its time on the
 // virtual clock. After the take the log is played again into an OfflineAudioContext from the
 // same recipes (sound.js's SOUNDS, VOLUME, RUMBLE), and muxed in frame-accurately.
 import { spawn, execSync } from "node:child_process";
-import { existsSync, mkdirSync, mkdtempSync, rmSync, writeFileSync } from "node:fs";
+import { existsSync, mkdirSync, mkdtempSync, readFileSync, rmSync, writeFileSync } from "node:fs";
 import { tmpdir, homedir } from "node:os";
 import { join } from "node:path";
 
@@ -98,38 +98,42 @@ const VIRTUAL_TIME = `(() => {
 })()`;
 
 // ── The drawn cursor ──────────────────────────────────────────────────────────────────────
-// Lucide's mouse-pointer-2, pointer, hand and hand-grab (ISC), drawn like the macOS ones: the
-// arrow filled dark with a white edge, the hands a dark line over a thicker white one.
-// `hot` is the point in the 24-unit icon that sits on the mouse position.
-const hand = (paths) => `<svg viewBox="0 0 24 24" width="100%" height="100%" fill="none" stroke-linecap="round" stroke-linejoin="round">`
-  + `<g stroke="#fff" stroke-width="4.2">${paths}</g><g stroke="#111" stroke-width="1.7">${paths}</g></svg>`;
-const ICONS = {
-  arrow: { hot: [4.2, 4.2], svg: `<svg viewBox="0 0 24 24" width="100%" height="100%"><path d="M4.037 4.688a.495.495 0 0 1 .651-.651l16 6.5a.5.5 0 0 1-.063.947l-6.124 1.58a2 2 0 0 0-1.438 1.435l-1.579 6.126a.5.5 0 0 1-.947.063z" fill="#111" stroke="#fff" stroke-width="1.6" stroke-linejoin="round"/></svg>` },
-  pointer: { hot: [8, 2.5], svg: hand(`<path d="M22 14a8 8 0 0 1-8 8"/><path d="M18 11v-1a2 2 0 0 0-2-2a2 2 0 0 0-2 2"/><path d="M14 10V9a2 2 0 0 0-2-2a2 2 0 0 0-2 2v1"/><path d="M10 9.5V4a2 2 0 0 0-2-2a2 2 0 0 0-2 2v10"/><path d="M18 11a2 2 0 1 1 4 0v3a8 8 0 0 1-8 8h-2c-2.8 0-4.5-.86-5.99-2.34l-3.6-3.6a2 2 0 0 1 2.83-2.82L7 15"/>`) },
-  grab: { hot: [12, 11], svg: hand(`<path d="M18 11V6a2 2 0 0 0-2-2a2 2 0 0 0-2 2"/><path d="M14 10V4a2 2 0 0 0-2-2a2 2 0 0 0-2 2v2"/><path d="M10 10.5V6a2 2 0 0 0-2-2a2 2 0 0 0-2 2v8"/><path d="M18 8a2 2 0 1 1 4 0v6a8 8 0 0 1-8 8h-2c-2.8 0-4.5-.86-5.99-2.34l-3.6-3.6a2 2 0 0 1 2.83-2.82L7 15"/>`) },
-  grabbing: { hot: [12, 12], svg: hand(`<path d="M18 11.5V9a2 2 0 0 0-2-2a2 2 0 0 0-2 2v1.4"/><path d="M14 10V8a2 2 0 0 0-2-2a2 2 0 0 0-2 2v2"/><path d="M10 9.9V9a2 2 0 0 0-2-2a2 2 0 0 0-2 2v5"/><path d="M6 14a2 2 0 0 0-2-2a2 2 0 0 0-2 2"/><path d="M18 11a2 2 0 1 1 4 0v3a8 8 0 0 1-8 8h-4a8 8 0 0 1-8-8 2 2 0 1 1 4 0"/>`) },
+// The hands are macOS's own cursors (HIServices' openhand, closedhand and pointinghand PDFs,
+// rasterised at 4× with sips, hotspots from their info.plist); the arrow, which macOS doesn't
+// keep as a file, is drawn to match. Each has a box (CSS px) and the hotspot within it.
+const MAC_CURSORS = "/System/Library/Frameworks/ApplicationServices.framework/Versions/A/Frameworks/HIServices.framework/Versions/A/Resources/cursors";
+const macCursor = (name, hot) => {
+  const png = join(mkdtempSync(join(tmpdir(), "ch-cursor-")), `${name}.png`);
+  execSync(`sips -s format png -z 128 128 "${MAC_CURSORS}/${name}/cursor.pdf" --out "${png}"`, { stdio: "ignore" });
+  const src = `data:image/png;base64,${readFileSync(png).toString("base64")}`;
+  return { box: 32, hot, html: `<img src="${src}" width="100%" height="100%" style="display:block">` };
 };
-const CURSOR_SIZE = 26; // CSS px, a little over the system size so it reads in a feed
+const ICONS = {
+  arrow: { box: 26, hot: [4.55, 4.55], html: `<svg viewBox="0 0 24 24" width="100%" height="100%"><path d="M4.037 4.688a.495.495 0 0 1 .651-.651l16 6.5a.5.5 0 0 1-.063.947l-6.124 1.58a2 2 0 0 0-1.438 1.435l-1.579 6.126a.5.5 0 0 1-.947.063z" fill="#111" stroke="#fff" stroke-width="1.6" stroke-linejoin="round"/></svg>` },
+  pointer: macCursor("pointinghand", [13, 8]),
+  grab: macCursor("openhand", [16, 17]),
+  grabbing: macCursor("closedhand", [16, 17]),
+};
 const CURSOR = `(() => {
-  const ICONS = ${JSON.stringify(ICONS)}, SIZE = ${CURSOR_SIZE}
+  const ICONS = ${JSON.stringify(ICONS)}
   let el = null, x = -200, y = -200, kind = ''
   const show = () => {
     if (!el) {
       if (!document.body) return
       el = document.createElement('div')
-      Object.assign(el.style, { position: 'fixed', left: '0', top: '0', width: SIZE + 'px', height: SIZE + 'px', zIndex: 2147483647, pointerEvents: 'none' })
+      // the soft shadow macOS draws under its cursors
+      Object.assign(el.style, { position: 'fixed', left: '0', top: '0', zIndex: 2147483647, pointerEvents: 'none', filter: 'drop-shadow(0 1px 1.5px rgb(0 0 0 / 0.35))' })
       document.body.append(el)
     }
     const t = document.elementFromPoint(x, y)
     const c = t ? getComputedStyle(t).cursor : 'default'
     const k = c === 'grab' || c === 'grabbing' || c === 'pointer' ? c : 'arrow'
-    if (k !== kind) { kind = k; el.innerHTML = ICONS[k].svg }
-    const [hx, hy] = ICONS[k].hot
-    el.style.transform = 'translate(' + (x - hx * SIZE / 24) + 'px,' + (y - hy * SIZE / 24) + 'px)'
+    const icon = ICONS[k]
+    if (k !== kind) { kind = k; el.innerHTML = icon.html; el.style.width = el.style.height = icon.box + 'px' }
+    el.style.transform = 'translate(' + (x - icon.hot[0]) + 'px,' + (y - icon.hot[1]) + 'px)'
   }
   addEventListener('mousemove', (e) => { x = e.clientX; y = e.clientY; show() }, true)
   window.__cursorUpdate = show
-  window.__cursorHide = () => { if (el) el.style.display = 'none' }
 })()`;
 
 // ── Driver ───────────────────────────────────────────────────────────────────────────────
@@ -223,30 +227,27 @@ const toScreen = (d, x, y) => d.ev(`(() => { const r = document.getElementById('
 
 // ── Takes ────────────────────────────────────────────────────────────────────────────────
 const TAKES = {
-  // Hover past the cord, then pull it: the lamp comes on (and the house goes dark), and on
-  // the second pull off again.
+  // Straight to the cord: three clicks (on, off, on), then one pull down (off).
   lamp: {
     hash: "lamp",
     flow: async (d) => {
       const cord = async () => d.ev(`(() => { const r = [...document.querySelectorAll('.cord .char')].map((c) => c.getBoundingClientRect()).filter((r) => r.width).sort((a, b) => b.bottom - a.bottom)[0]; return { x: r.left + r.width / 2, y: r.top + r.height / 2, h: r.height } })()`);
+      const HOLDS = [105, 120, 98]; // ms a click is held: a hand's, never quite the same
+      const click = async (i) => { await d.down(); await d.wait(HOLDS[i]); await d.up(); };
       let c = await cord();
-      await d.place(1060, 600); await d.wait(700);
-      await d.move(c.x + 70, c.y - 40);
-      await d.move(c.x - 60, c.y - 20, 820, { bow: 0.05 }); // brushing through the cord
-      await d.move(c.x + 45, c.y + 10, 700, { bow: 0.05 });
-      await d.wait(350);
-      c = await cord();
-      await d.move(c.x, c.y, 520); await d.wait(260);
-      await d.down(); await d.wait(90);
-      await d.move(c.x + 2, c.y + 4.2 * c.h, 430, { bow: 0, tremor: 0.2 }); await d.wait(140);
+      await d.place(1030, 610); await d.wait(800);
+      await d.move(c.x + 1, c.y + 2, 1050); await d.wait(420);
+      for (let i = 0; i < 3; i++) {
+        await click(i);
+        await d.wait(1250);
+        c = await cord(); // the cord has swung back; meet it where it hangs
+        await d.move(c.x + 1, c.y + 2, 240, { bow: 0, tremor: 0.15 }); await d.wait(120);
+      }
+      await d.wait(250);
+      await d.down(); await d.wait(110);
+      await d.move(c.x + 2, c.y + 4.6 * c.h, 520, { bow: 0, tremor: 0.2 }); await d.wait(160);
       await d.up(); await d.wait(1700);
-      await d.move(c.x + 50, c.y + 30, 650); await d.move(c.x - 40, c.y, 760, { bow: 0.04 }); await d.wait(500);
-      c = await cord();
-      await d.move(c.x, c.y, 560); await d.wait(240);
-      await d.down(); await d.wait(90);
-      await d.move(c.x + 2, c.y + 4.2 * c.h, 420, { bow: 0, tremor: 0.2 }); await d.wait(140);
-      await d.up(); await d.wait(1300);
-      await d.move(1000, 610, 1000); await d.wait(700);
+      await d.move(c.x + 150, c.y + 150, 900); await d.wait(900);
     },
   },
   // Through the strands: high and slow, low and quicker, then a slow wander in the middle.

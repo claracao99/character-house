@@ -82,7 +82,8 @@ export function unlockSound() {
     const data = noiseBuffer.getChannelData(0);
     for (let i = 0; i < data.length; i++) data[i] = Math.random() * 2 - 1;
   }
-  if (ctx.state === "suspended") ctx.resume();
+  // "suspended" before the first gesture or after a pause; Safari also says "interrupted"
+  if (ctx.state !== "running" && ctx.state !== "closed") ctx.resume();
 }
 
 // Starting audio the first time can hold the page for a moment (~170 ms in Chrome), which at
@@ -90,26 +91,31 @@ export function unlockSound() {
 // first gesture ends, wait until nothing is held for a beat, then unlock (Chrome and Firefox
 // allow it once the page has been used). Where that isn't enough (Safari wants it inside a
 // gesture), the next gesture's end unlocks right away.
+//
+// It keeps listening for the whole visit: the browser can pause audio again later (iOS does
+// on a call or an app switch), and until something resumes it every sound goes unheard. So
+// any gesture, or the tab coming back into view, resumes it if it isn't running.
 const UNLOCK_QUIET = 600; // ms with no pointer held
 export function unlockOnGesture() {
-  const ends = ["pointerup", "touchend", "keydown"];
   let held = 0, timer = 0, tried = false;
-  const done = () => {
-    for (const type of ends) removeEventListener(type, onEnd, true);
-    removeEventListener("pointerdown", onDown, true);
-  };
+  const running = () => ctx?.state === "running";
   const later = () => {
     clearTimeout(timer);
     timer = setTimeout(() => (held ? later() : unlockSound()), UNLOCK_QUIET);
   };
-  const onDown = () => { held++; };
+  addEventListener("pointerdown", () => {
+    held++;
+    if (ctx && !running()) unlockSound(); // paused since it started: resume, it's cheap now
+  }, true);
   const onEnd = (e) => {
-    if (e.type === "pointerup") held = Math.max(0, held - 1);
-    if (ctx?.state === "running") return done();
-    if (!tried) { tried = true; later(); } else unlockSound();
+    if (e.type === "pointerup" || e.type === "pointercancel") held = Math.max(0, held - 1);
+    if (running()) return;
+    if (!ctx && !tried) { tried = true; later(); } else unlockSound();
   };
-  addEventListener("pointerdown", onDown, true);
-  for (const type of ends) addEventListener(type, onEnd, true);
+  for (const type of ["pointerup", "pointercancel", "touchend", "keydown"]) addEventListener(type, onEnd, true);
+  document.addEventListener("visibilitychange", () => {
+    if (!document.hidden && ctx && !running()) unlockSound();
+  });
 }
 
 // Debug hook for tests, off unless a page sets window.__sounds = [].

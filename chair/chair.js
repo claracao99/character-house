@@ -39,6 +39,9 @@ const REST_X = 1070; // where the centre of mass sits at rest
 // The art's opaque box (the page centres it): its height as it rests (top of the back at
 // 361, measured), wide enough for the rock's sweep.
 export const BOUNDS = { x0: 330, y0: 361, x1: 1640, y1: FLOOR };
+// ...but centred on what's visible at rest: the tilted chair and its rocker span 1114 ± 653
+// (measured from pixels), right of the sweep's middle
+export const CENTRE_X = 1114;
 
 const STEP = 1 / 120;
 const SUBSTEPS = 4;

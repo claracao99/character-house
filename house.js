@@ -45,7 +45,8 @@ let index = -1, piece = null;
 // The piece's frame fits the space between the nav and the entry, and the art itself (its
 // opaque box, BOUNDS, which sits anywhere in the frame) is centred in that space, so every
 // piece looks balanced over its entry rather than wherever its frame puts it. A piece can
-// name its own horizontal centre instead (CENTRE_X: the pram's is between its wheels).
+// name its own horizontal centre instead (CENTRE_X: the pram's is between its wheels, the
+// chair's where it sits at rest).
 const NAV_CLEAR = 72; // px kept at the top for the nav
 const ENTRY_GAP = 32; // px between the piece and its entry
 const fit = () => {

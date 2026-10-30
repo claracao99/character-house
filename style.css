@@ -31,7 +31,7 @@ html, body {
   top: 24px;
   left: 24px;
   right: 24px;
-  z-index: 1;
+  z-index: 2; /* over the turn strips, so the name and speaker stay clickable */
   display: flex;
   justify-content: space-between;
   align-items: center;
@@ -123,29 +123,36 @@ html, body {
 .entry .grid .lines { stroke-width: 1px; stroke-dasharray: 3 3; vector-effect: non-scaling-stroke; opacity: 0.8; }
 .entry .hanzi { position: relative; }
 
-/* previous / next, at the middle of each side; the hit area is bigger than the arrow */
+/* previous / next: each side's whole strip, top to bottom, is the button, with the arrow in
+   the middle. On hover the strip takes a faint wash of the ink and the arrow leans out. */
 .turn {
   position: fixed;
-  top: 50%;
+  top: 0;
+  bottom: 0;
   z-index: 1;
-  width: 48px;
-  height: 48px;
-  margin-top: -24px;
+  width: clamp(48px, 6vw, 96px);
   display: grid;
   place-items: center;
   padding: 0;
   border: 0;
-  border-radius: 50%;
-  background: none;
+  background: transparent;
   color: inherit;
   cursor: pointer;
+  transition: background-color 0.2s ease;
   -webkit-tap-highlight-color: transparent;
 }
 
-.turn.prev { left: 12px; }
-.turn.next { right: 12px; }
-.turn svg { width: 20px; height: 20px; fill: currentColor; }
-.turn:focus-visible { outline: 2px solid currentColor; outline-offset: -4px; }
+.turn.prev { left: 0; }
+.turn.next { right: 0; }
+.turn svg { width: 28px; height: 28px; fill: currentColor; transition: transform 0.2s ease; }
+.turn:focus-visible { outline: 2px solid currentColor; outline-offset: -6px; }
+
+/* only where there's a real hover, so a tap on a phone doesn't leave the wash behind */
+@media (hover: hover) {
+  .turn:hover { background-color: color-mix(in srgb, currentColor 7%, transparent); }
+  .turn.prev:hover svg { transform: translateX(-4px); }
+  .turn.next:hover svg { transform: translateX(4px); }
+}
 
 /* In the dark the nav, the entry and the pieces' deep-blue characters turn light blue; the
    furniture keeps its colours (the clock its coral), and the lamp glows. */
@@ -155,5 +162,5 @@ html, body, .stage .char { transition: background-color 0.3s ease, color 0.3s ea
 :root[data-theme="dark"] .piece-lamp .glow { opacity: 1; }
 
 @media (prefers-reduced-motion: reduce) {
-  html, body { transition: none; }
+  html, body, .turn, .turn svg { transition: none; }
 }
